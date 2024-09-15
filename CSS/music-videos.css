@@ -1,0 +1,232 @@
+.video-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.video-row {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.video-item {
+    width: 22%;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.video-item:hover {
+    transform: translateY(-5px);
+}
+
+.video-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.video-item h3 {
+    font-size: 18px;
+    margin: 10px;
+    color: #333;
+}
+
+.video-item p {
+    font-size: 14px;
+    margin: 10px;
+    color: #666;
+}
+
+.video-item a {
+    display: block;
+    text-align: center;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    text-decoration: none;
+    margin: 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.video-item a:hover {
+    background-color: #45a049;
+}
+
+.upload-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    margin: 20px auto;
+}
+
+.upload-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    margin: 20px auto;
+}
+
+.custom-file-upload:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+#newUploadFormContainer {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+#newUploadFormContainer h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+#newUploadFormContainer form {
+    display: flex;
+    flex-direction: column;
+}
+
+#newUploadFormContainer input[type="text"],
+#newUploadFormContainer textarea {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+#newUploadFormContainer input[type="file"] {
+    display: none;
+}
+
+#newUploadFormContainer .custom-file-upload {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    margin: 10px 0;
+}
+
+#newUploadFormContainer .custom-file-upload:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+#newUploadFormContainer .upload-form-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+#newUploadFormContainer .upload-form-buttons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+#newUploadFormContainer .upload-form-buttons button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+@media (max-width: 1024px) {
+    .video-item {
+        width: 30%;
+    }
+}
+
+@media (max-width: 768px) {
+    .video-item {
+        width: 45%;
+    }
+}
+
+@media (max-width: 480px) {
+    .video-item {
+        width: 100%;
+    }
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+}
+
+.modal-content {
+    margin: 5% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 700px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#videoPlayer {
+    width: 100%;
+    height: auto;
+}
