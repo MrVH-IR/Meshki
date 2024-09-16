@@ -3,6 +3,7 @@ session_start();
 require_once 'CSS/common_functions.php';
 include 'configure.php';
 
+ini_set('error_log', 'C:/xampp/htdocs/Meshki/my_errors.log');
 
 // دریافت ویدیوها از پایگاه داده
 $sql = "SELECT * FROM tblvids ORDER BY upload_date DESC";

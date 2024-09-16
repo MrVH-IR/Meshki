@@ -72,6 +72,27 @@ function closeUploadForm() {
         uploadFormContainer.remove();
     }
 }
+
+function deleteSong(songId) {
+    if (confirm("آیا مطمئن هستید که می‌خواهید این آهنگ را حذف کنید؟")) {
+        fetch("delete_song.php?id=" + songId, {
+            method: "GET"
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("آهنگ با موفقیت حذف شد.");
+                location.reload();
+            } else {
+                alert("خطا در حذف آهنگ: " + data.error);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("خطا در ارتباط با سرور");
+        });
+    }
+}
 </script>
 ';
 
@@ -141,6 +162,7 @@ if ($result->num_rows > 0) {
         echo 'مرورگر شما از پخش صوتی پشتیبانی نمی‌کند.';
         echo '</audio>';
         echo '</div>';
+        echo '<button class="delete-btn" onclick="deleteSong(' . $row["id"] . ')">X</button>';
         echo '</div>';
     }
     
@@ -230,3 +252,42 @@ if (\$_SERVER["REQUEST_METHOD"] == "POST") {
 EOT;
 
 file_put_contents('upload_song.php', $upload_song_file);
+
+// ایجاد فایل delete_song.php برای پردازش حذف آهنگ
+$delete_song_file = <<<EOT
+<?php
+if (isset(\$_GET['id'])) {
+    \$songId = \$_GET['id'];
+
+    // اتصال به دیتابیس
+    \$servername = "localhost";
+    \$username = "root";
+    \$password = "";
+    \$dbname = "meshki";
+
+    \$conn = new mysqli(\$servername, \$username, \$password, \$dbname);
+
+    if (\$conn->connect_error) {
+        die(json_encode(["success" => false, "error" => "خطا در اتصال به پایگاه داده: " . \$conn->connect_error]));
+    }
+
+    // حذف آهنگ از دیتابیس
+    \$sql = "DELETE FROM tblsongs WHERE id = ?";
+    \$stmt = \$conn->prepare(\$sql);
+    \$stmt->bind_param("i", \$songId);
+
+    if (\$stmt->execute()) {
+        echo json_encode(["success" => true]);
+    } else {
+        echo json_encode(["success" => false, "error" => "خطا در حذف آهنگ: " . \$stmt->error]);
+    }
+
+    \$stmt->close();
+    \$conn->close();
+} else {
+    echo json_encode(["success" => false, "error" => "شناسه آهنگ ارسال نشده است."]);
+}
+?>
+EOT;
+
+file_put_contents('delete_song.php', $delete_song_file);

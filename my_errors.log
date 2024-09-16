@@ -1,5 +1,1 @@
-[15-Sep-2024 21:07:06 Europe/Berlin] PHP Warning:  Undefined variable $SESSION in C:\xampp\htdocs\Meshki\music-videos.php on line 7
-[15-Sep-2024 21:07:06 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Meshki\music-videos.php on line 7
-[15-Sep-2024 21:07:06 Europe/Berlin] error
-[15-Sep-2024 21:07:37 Europe/Berlin] PHP Warning:  Undefined variable $SESSION in C:\xampp\htdocs\Meshki\music-videos.php on line 7
-[15-Sep-2024 21:07:37 Europe/Berlin] error
+[16-Sep-2024 21:03:10 Europe/Berlin] PHP Warning:  Undefined variable $template in C:\xampp\htdocs\Meshki\music-videos.php on line 13
