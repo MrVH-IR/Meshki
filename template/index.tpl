@@ -145,6 +145,7 @@
                 const songElement = document.createElement('div');
                 songElement.className = 'music-container';
                 songElement.innerHTML = `
+                    <button class="delete-btn">X</button>
                     <h2 class="music-title">${song.artist} - ${song.songName}</h2>
                     <img src="${song.posterPath}" alt="${song.artist} - ${song.songName}" class="music-poster" onerror="this.onerror=null; this.src='./admin/posters/Check-For-Error-Message-min.gif'; this.alt='خطا در بارگذاری تصویر';">
                     <p class="music-description">${song.description}</p>
@@ -310,6 +311,22 @@
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: transparent;
+            border: none;
+            font-size: 20px;
+            color: #ff69b4;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .delete-btn:hover {
+            color: #ff1493;
+            transform: scale(1.2);
         }
         .music-title {
             font-size: 24px;
