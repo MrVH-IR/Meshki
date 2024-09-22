@@ -44,6 +44,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($insert_stmt->execute()) {
                 $success_message = "<p style='color: green;'>ثبت نام با موفقیت انجام شد!</p>";
                 $template = str_replace('</form>', $success_message . '</form>', $template);
+                header("Location: index.php");
+                exit();
             } else {
                 $error_message = "<p style='color: red;'>خطا در ثبت نام: " . $conn->error . "</p>";
                 $template = str_replace('</form>', $error_message . '</form>', $template);

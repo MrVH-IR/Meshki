@@ -1,5 +1,5 @@
 <?php
-
+ini_set('error_log', 'C:/xampp/htdocs/Meshki/my_errors.log');
 function generate_header($title, $search_query = '') {
     $header = <<<EOT
     <!DOCTYPE html>
@@ -10,6 +10,92 @@ function generate_header($title, $search_query = '') {
         <title>$title | مشکی</title>
         <link rel="stylesheet" href="CSS/common.css">
         <link rel="stylesheet" href="CSS/pagination.css">
+        <style>
+            .upload-btn {
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            .upload-btn:hover {
+                background-color: #45a049;
+            }
+            #uploadVideoFormContainer {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #800080; /* تغییر رنگ به بنفش */
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+                width: 90%;
+                max-width: 500px;
+            }
+            #uploadVideoFormContainer h3 {
+                margin-bottom: 20px;
+                font-size: 20px;
+                text-align: center;
+            }
+            #uploadVideoFormContainer input[type="text"],
+            #uploadVideoFormContainer input[type="file"],
+            #uploadVideoFormContainer textarea {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+            #uploadVideoFormContainer input[name="videoName"] {
+                font-size: 10px; /* کوچک تر کردن فیلد نام ویدیو */
+            },
+            #uploadVideoFormContainer input[name="artist"] {
+                font-size: 12px; /* کوچک تر کردن فیلد نام ویدیو و هنرمند */
+            }
+            #uploadVideoFormContainer .custom-file-upload {
+                display: block;
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                background-color: #f1f1f1;
+                border: 1px dashed #ccc;
+                border-radius: 5px;
+                text-align: center;
+                cursor: pointer;
+                color: red; /* تغییر رنگ به قرمز */
+            }
+            #uploadVideoFormContainer .upload-form-buttons {
+                display: flex;
+                justify-content: space-between;
+            }
+            #uploadVideoFormContainer .upload-form-buttons button {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            #uploadVideoFormContainer .upload-form-buttons button[type="submit"] {
+                background-color: #4CAF50;
+                color: white;
+            }
+            #uploadVideoFormContainer .upload-form-buttons button[type="submit"]:hover {
+                background-color: #45a049;
+            }
+            #uploadVideoFormContainer .upload-form-buttons button[type="button"] {
+                background-color: #f44336;
+                color: white;
+            }
+            #uploadVideoFormContainer .upload-form-buttons button[type="button"]:hover {
+                background-color: #e53935;
+            }
+        </style>
     </head>
     <body>
         <header>
@@ -29,7 +115,7 @@ function generate_header($title, $search_query = '') {
                     <li><a href="artists.php">هنرمندان</a></li>
                     <li><a href="playlists.php">پلی‌لیست‌ها</a></li>
                     <li><a href="aboutus.php">درباره ما</a></li>
-                    <?php if(isset(\$_SESSION['user_id'])): ?>
+                    <?php if(isset(\$_SESSION['user_id']) || isset(\$_SESSION['is_admin'])): ?>
                     <li><a href="profile.php">پروفایل من</a></li>
                     <li><a href="logout.php">خروج</a></li>
                     <?php else: ?>
@@ -38,8 +124,7 @@ function generate_header($title, $search_query = '') {
                     <?php endif; ?>
                 </ul>
                 <?php if(isset(\$_SESSION['is_admin']) && \$_SESSION['is_admin'] === true): ?>
-                    <button id="uploadBtn" class="upload-btn">آپلود آهنگ</button>
-                    <button id="newUploadBtn" class="upload-btn">آپلود ویدیو جدید</button>
+                    <button id="uploadVideoBtn" class="upload-btn">آپلود ویدیو</button>
                 <?php endif; ?>
             </nav>
             <div class="search-container">
@@ -51,6 +136,26 @@ function generate_header($title, $search_query = '') {
         </header>
         <div class="background-banner">
             <img src="./admin/banners/bgbanner.jpg" alt="بنر پس زمینه" class="background-image">
+        </div>
+        <div id="uploadVideoFormContainer" style="display: none;">
+            <div id="uploadVideoForm">
+                <span class="close-btn" onclick="closeUploadVideoForm()">&times;</span>
+                <h3>آپلود ویدیو جدید</h3>
+                <form id="uploadVideoFormElement" enctype="multipart/form-data">
+                    <input type="text" name="videoName" placeholder="نام ویدیو" required>
+                    <input type="text" name="artist" placeholder="نام هنرمند" required>
+                    <input type="file" name="thumbnail" id="thumbnailFile" accept="image/*" required style="display: none;">
+                    <label for="thumbnailFile" class="custom-file-upload">انتخاب تصویر پوستر</label>
+                    <span id="thumbnailFileName"></span>
+                    <input type="file" name="video" id="videoFile" accept="video/*" required style="display: none;">
+                    <label for="videoFile" class="custom-file-upload">انتخاب فایل ویدیو</label>
+                    <span id="videoFileName"></span>
+                    <div class="upload-form-buttons">
+                        <button type="submit">آپلود</button>
+                        <button type="button" onclick="closeUploadVideoForm()">بستن</button>
+                    </div>
+                </form>
+            </div>
         </div>
     EOT;
     return $header;
@@ -76,132 +181,34 @@ function generate_footer() {
                     button.textContent = "نمایش بیشتر";
                 }
             }
-            // اضافه کردن کد مربوط به فرم آپلود
-            const uploadBtn = document.getElementById('uploadBtn');
-            if (uploadBtn) {
-                uploadBtn.addEventListener('click', function() {
-                    const uploadForm = document.createElement('div');
-                    uploadForm.innerHTML = `
-                        <div id="uploadFormContainer">
-                            <h3>آپلود آهنگ جدید</h3>
-                            <form id="uploadForm" enctype="multipart/form-data">
-                                <input type="text" name="artist" placeholder="نام هنرمند" required>
-                                <input type="text" name="songName" placeholder="نام آهنگ" required>
-                                <input type="file" name="song" id="songFile" accept="audio/*" required style="display: none;">
-                                <label for="songFile" class="custom-file-upload">انتخاب فایل آهنگ</label>
-                                <span id="songFileName"></span>
-                                <input type="file" name="poster" id="posterFile" accept="image/*" required style="display: none;">
-                                <label for="posterFile" class="custom-file-upload">انتخاب تصویر پوستر</label>
-                                <span id="posterFileName"></span>
-                                <textarea name="description" placeholder="توضیحات آهنگ" required></textarea>
-                                <input type="text" name="tags" placeholder="تگ‌ها (با کاما جدا کنید)" required>
-                                <div class="upload-form-buttons">
-                                    <button type="submit">آپلود</button>
-                                    <button type="button" onclick="closeUploadForm()">بستن</button>
-                                </div>
-                            </form>
-                        </div>
-                    `;
-                    document.body.appendChild(uploadForm);
-
-                    // اضافه کردن event listener برای فرم آپلود
-                    const form = document.getElementById('uploadForm');
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        // کد مربوط به ارسال فرم را اینجا قرار دهید
-                    });
-                });
+            function closeUploadVideoForm() {
+                document.getElementById('uploadVideoFormContainer').style.display = 'none';
             }
-            function closeUploadForm() {
-                const uploadFormContainer = document.getElementById('uploadFormContainer');
-                if (uploadFormContainer) {
-                    uploadFormContainer.remove();
-                }
-            }
-
-            // کدهای vbutton.php
-            document.addEventListener('DOMContentLoaded', function() {
-                const newUploadBtn = document.getElementById('newUploadBtn');
-                const uploadedVideos = document.getElementById('uploadedVideos');
-                let isFormOpen = false;
-
-                newUploadBtn.addEventListener('click', function() {
-                    if (!isFormOpen) {
-                        isFormOpen = true;
-                        const newUploadForm = document.createElement('div');
-                        newUploadForm.innerHTML = `
-                            <div id="newUploadFormContainer">
-                                <h3>آپلود ویدیو جدید</h3>
-                                <form id="newUploadForm" enctype="multipart/form-data">
-                                    <input type="text" name="title" placeholder="عنوان" required>
-                                    <textarea name="description" placeholder="توضیحات" required></textarea>
-                                    <input type="file" name="video" id="newVideoFile" accept="video/*" style="display: none;">
-                                    <label for="newVideoFile" class="custom-file-upload">انتخاب فایل ویدیو</label>
-                                    <span id="newVideoFileName"></span>
-                                    <input type="file" name="thumbnail" id="newThumbnailFile" accept="image/*" style="display: none;">
-                                    <label for="newThumbnailFile" class="custom-file-upload">انتخاب تصویر بندانگشتی</label>
-                                    <span id="newThumbnailFileName"></span>
-                                    <div class="upload-form-buttons">
-                                        <button type="submit">آپلود</button>
-                                        <button type="button" onclick="closeNewUploadForm()">بستن</button>
-                                    </div>
-                                </form>
-                            </div>
-                        `;
-                        document.body.appendChild(newUploadForm);
-
-                        document.getElementById('newVideoFile').addEventListener('change', function(e) {
-                            document.getElementById('newVideoFileName').textContent = e.target.files[0].name;
-                        });
-
-                        document.getElementById('newThumbnailFile').addEventListener('change', function(e) {
-                            document.getElementById('newThumbnailFileName').textContent = e.target.files[0].name;
-                        });
-
-                        document.getElementById('newUploadForm').addEventListener('submit', function(e) {
-                            e.preventDefault();
-                            const formData = new FormData(this);
-                            fetch('upload_video.php', {
-                                method: 'POST',
-                                body: formData
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    alert('ویدیو با موفقیت آپلود شد.');
-                                    closeNewUploadForm();
-                                    displayUploadedVideo(data.video);
-                                } else {
-                                    alert('خطا در آپلود ویدیو: ' + data.error);
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert('خطا در آپلود ویدیو: لطفاً دوباره تلاش کنید.');
-                            });
-                        });
-                    }
+            document.getElementById('uploadVideoBtn').addEventListener('click', function() {
+                document.getElementById('uploadVideoFormContainer').style.display = 'block';
+            });
+            document.getElementById('thumbnailFile').addEventListener('change', function() {
+                document.getElementById('thumbnailFileName').textContent = this.files[0] ? this.files[0].name : '';
+            });
+            document.getElementById('videoFile').addEventListener('change', function() {
+                document.getElementById('videoFileName').textContent = this.files[0] ? this.files[0].name : '';
+            });
+            document.getElementById('uploadVideoFormElement').addEventListener('submit', function(event) {
+                event.preventDefault();
+                var formData = new FormData(this);
+                fetch('upload_video.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('ویدیو با موفقیت آپلود شد.');
+                    window.location.reload(); // بارگذاری مجدد صفحه برای نمایش ویدیوهای جدید
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('خطا در آپلود ویدیو.');
                 });
-
-                function closeNewUploadForm() {
-                    const newUploadFormContainer = document.getElementById('newUploadFormContainer');
-                    if (newUploadFormContainer) {
-                        newUploadFormContainer.remove();
-                        isFormOpen = false;
-                    }
-                }
-
-                function displayUploadedVideo(video) {
-                    const videoElement = document.createElement('div');
-                    videoElement.className = 'video-item';
-                    videoElement.innerHTML = `
-                        <img src="\${video.thumbnail}" alt="\${video.title}">
-                        <h3>\${video.title}</h3>
-                        <p>\${video.description}</p>
-                        <a href="play_video.php?id=\${video.id}">پخش ویدیو</a>
-                    `;
-                    uploadedVideos.prepend(videoElement);
-                }
             });
         </script>
     </body>
@@ -253,3 +260,110 @@ function generate_pagination($total_pages, $current_page, $base_url) {
     $pagination .= '</div></div>';
     return $pagination;
 }
+// ایجاد فایل upload_video.php برای پردازش آپلود ویدیو
+$upload_video_file = <<<EOT
+<?php
+if (\$_SERVER["REQUEST_METHOD"] == "POST") {
+    // دریافت اطلاعات فرم
+    \$title = \$_POST['title'];
+    \$description = \$_POST['description'];
+
+    // آپلود فایل ویدیو
+    \$target_dir_video = "admin/vdata/";
+    \$target_file_video = \$target_dir_video . basename(\$_FILES["video"]["name"]);
+    if (move_uploaded_file(\$_FILES["video"]["tmp_name"], \$target_file_video)) {
+        // آپلود فایل پوستر
+        \$target_dir_thumbnail = "admin/vdata/thumbnails/";
+        \$target_file_thumbnail = \$target_dir_thumbnail . basename(\$_FILES["thumbnail"]["name"]);
+        if (move_uploaded_file(\$_FILES["thumbnail"]["tmp_name"], \$target_file_thumbnail)) {
+            // ذخیره اطلاعات در دیتابیس
+            \$servername = "localhost";
+            \$username = "root";
+            \$password = "";
+            \$dbname = "meshki";
+            \$conn = new mysqli(\$servername, \$username, \$password, \$dbname);
+            
+            if (\$conn->connect_error) {
+                die("Connection failed: " . \$conn->connect_error);
+            }
+
+            \$sql = "INSERT INTO tblvids (title, description, videoPath, thumbnailPath, upload_date)
+            VALUES (?, ?, ?, ?, NOW())";
+            
+
+            \$stmt = \$conn->prepare(\$sql);
+            \$stmt->bind_param("ssss", \$title, \$description, \$target_file_video, \$target_file_thumbnail);
+
+            if (\$stmt->execute()) {
+                \$video_id = \$stmt->insert_id;
+                \$response = [
+                    'success' => true,
+                    'video' => [
+                        'id' => \$video_id,
+                        'title' => \$title,
+                        'description' => \$description,
+                        'videoPath' => \$target_file_video,
+                        'thumbnailPath' => \$target_file_thumbnail
+                    ]
+                ];
+                echo json_encode(\$response);
+            } else {
+                echo json_encode(['success' => false, 'error' => "خطا در آپلود ویدیو: " . \$stmt->error]);
+            }
+
+            \$stmt->close();
+            \$conn->close();
+        } else {
+            echo json_encode(['success' => false, 'error' => "خطا در آپلود فایل پوستر."]);
+        }
+    } else {
+        echo json_encode(['success' => false, 'error' => "خطا در آپلود فایل ویدیو."]);
+    }
+}
+?>
+EOT;
+
+file_put_contents('./upload_video.php', $upload_video_file);
+// ایجاد فایل delete_video.php برای پردازش حذف ویدیو
+$delete_video_file = <<<EOT
+<?php
+session_start();
+if (isset(\$_SESSION['is_admin']) && \$_SESSION['is_admin'] === true) {
+    if (isset(\$_GET['id'])) {
+        \$videoId = \$_GET['id'];
+
+        // اتصال به دیتابیس
+        \$servername = "localhost";
+        \$username = "root";
+        \$password = "";
+        \$dbname = "meshki";
+
+        \$conn = new mysqli(\$servername, \$username, \$password, \$dbname);
+
+        if (\$conn->connect_error) {
+            die(json_encode(["success" => false, "error" => "خطا در اتصال به پایگاه داده: " . \$conn->connect_error]));
+        }
+
+        // حذف ویدیو از دیتابیس
+        \$sql = "DELETE FROM tblvids WHERE id = ?";
+        \$stmt = \$conn->prepare(\$sql);
+        \$stmt->bind_param("i", \$videoId);
+
+        if (\$stmt->execute()) {
+            echo json_encode(["success" => true]);
+        } else {
+            echo json_encode(["success" => false, "error" => "خطا در حذف ویدیو: " . \$stmt->error]);
+        }
+
+        \$stmt->close();
+        \$conn->close();
+    } else {
+        echo json_encode(["success" => false, "error" => "شناسه ویدیو ارسال نشده است."]);
+    }
+} else {
+    echo json_encode(["success" => false, "error" => "دسترسی غیرمجاز."]);
+}
+?>
+EOT;
+
+file_put_contents('./delete_video.php', $delete_video_file);

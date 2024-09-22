@@ -59,7 +59,7 @@
         <h2>ثبت نام</h2>
         <form action="register.php" method="post">
             <label for="username">نام کاربری:</label>
-            <input type="text" id="username" name="username" required>
+            <input type="text" id="username" htmlspecialchars name="username" required>
             
             <label for="email">ایمیل:</label>
             <input type="email" id="email" name="email" required>

@@ -32,7 +32,7 @@
                 <li><a href="../meshki/artists.php">هنرمندان</a></li>
                 <li><a href="../meshki/playlists.php">پلی‌لیست‌ها</a></li>
                 <li><a href="../meshki/aboutus.php">درباره ما</a></li>
-                <?php if(isset($_SESSION['user_id'])): ?>
+                <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?>
                     <li><a href="../meshki/profile.php">پروفایل من</a></li>
                     <li><a href="../meshki/logout.php">خروج</a></li>
                 <?php else: ?>

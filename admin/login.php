@@ -39,7 +39,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['admin_id'] = $row['id'];
             $_SESSION['admin_username'] = $row['username'];
             $_SESSION['is_admin'] = true;
-            
+
+            // ایجاد توکن سشن
+            $session_token = bin2hex(random_bytes(32));
+            $created_at = date('Y-m-d H:i:s');
+            $end_at = date('Y-m-d H:i:s', strtotime('+5 hours'));
+
+            // ذخیره سشن در پایگاه داده
+            $sql = "INSERT INTO admin_sessions (admin_id, session_token, created_at, end_at) VALUES (?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("isss", $row['id'], $session_token, $created_at, $end_at);
+            $stmt->execute();
+
+            // ذخیره توکن سشن در سشن
+            $_SESSION['session_token'] = $session_token;
+
             header("Location: ../index.php");
             exit();
         } else {

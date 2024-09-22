@@ -60,120 +60,6 @@
     background-color: #45a049;
 }
 
-.upload-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
-    color: white;
-    background-color: #007BFF;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    text-align: center;
-    text-decoration: none;
-    margin: 20px auto;
-}
-
-.upload-btn:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-.custom-file-upload {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
-    color: white;
-    background-color: #007BFF;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    text-align: center;
-    text-decoration: none;
-    margin: 20px auto;
-}
-
-.custom-file-upload:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-#newUploadFormContainer {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    max-width: 500px;
-    margin: 20px auto;
-}
-
-#newUploadFormContainer h3 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-#newUploadFormContainer form {
-    display: flex;
-    flex-direction: column;
-}
-
-#newUploadFormContainer input[type="text"],
-#newUploadFormContainer textarea {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-}
-
-#newUploadFormContainer input[type="file"] {
-    display: none;
-}
-
-#newUploadFormContainer .custom-file-upload {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
-    color: white;
-    background-color: #007BFF;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    text-align: center;
-    text-decoration: none;
-    margin: 10px 0;
-}
-
-#newUploadFormContainer .custom-file-upload:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-#newUploadFormContainer .upload-form-buttons {
-    display: flex;
-    justify-content: space-between;
-}
-
-#newUploadFormContainer .upload-form-buttons button {
-    padding: 10px 20px;
-    font-size: 16px;
-    color: white;
-    background-color: #007BFF;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-#newUploadFormContainer .upload-form-buttons button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
 @media (max-width: 1024px) {
     .video-item {
         width: 30%;
@@ -229,4 +115,18 @@
 #videoPlayer {
     width: 100%;
     height: auto;
+}
+.video-item .delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 10;
 }

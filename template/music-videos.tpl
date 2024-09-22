@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>موزیک ویدیوها</title>
+    <link rel="stylesheet" href="../CSS/music-videos.css">
     <style>
         body {
             font-family: 'Vazir', Tahoma, Arial, sans-serif;
@@ -30,6 +31,7 @@
             margin-top: 20px;
         }
         .video-item {
+            position: relative;
             background: rgba(255, 255, 255, 0.8);
             border-radius: 5px;
             overflow: hidden;
@@ -81,6 +83,20 @@
             font-size: 30px;
             cursor: pointer;
         }
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+        }
         .pagination {
             text-align: center;
             margin-top: 20px;
@@ -118,44 +134,14 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div id="branding">
-                <h1><span class="highlight">Meshki</span> وب‌سایت</h1>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="index.php">خانه</a></li>
-                    <li class="current"><a href="music-videos.php">موزیک ویدیوها</a></li>
-                    <li><a href="aboutus.php">درباره ما</a></li>
-                    <li><a href="contact.php">تماس با ما</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
 
-    <!-- منوی کاربری -->
-    <div class="user-menu">
-        <?php if(isset($_SESSION['user_id'])): ?>
-            <a href="profile.php">پروفایل</a>
-            <a href="logout.php">خروج</a>
-        <?php else: ?>
-            <a href="login.php">ورود</a>
-            <a href="register.php">ثبت نام</a>
-        <?php endif; ?>
-    </div>
-
-    <section class="banner">
-        <h1>موزیک ویدیوها</h1>
-        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?>
-            <a href="upload_song.php" class="upload-btn">آپلود آهنگ جدید</a>
-            <a href="upload_video.php" class="upload-btn">آپلود ویدیو جدید</a>
-        <?php endif; ?>
-    </section>
     <div class="container">
         <div class="video-grid">
             <?php foreach ($musicVideos as $video): ?>
             <div class="video-item" data-video-id="<?php echo $video['id']; ?>">
+                <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?>
+                    <button class="delete-btn" onclick="deleteVideo(<?php echo $video['id']; ?>)">×</button>
+                <?php endif; ?>
                 <img src="<?php echo $video['thumbnailPath']; ?>" alt="<?php echo $video['title']; ?>" class="video-thumbnail">
                 <div class="video-info">
                     <h3 class="video-title"><?php echo $video['title']; ?></h3>
@@ -182,6 +168,5 @@
     <footer>
         <p>&copy; <?php echo date('Y'); ?> مشکی . تمامی حقوق محفوظ است.</p>
     </footer>
-
 </body>
 </html>
