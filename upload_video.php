@@ -1,49 +1,70 @@
 <?php
-session_start();
-if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true) {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $title = $_POST['videoName'];
-        $artist = $_POST['artist'];
-        $upload_date = date('Y-m-d H:i:s');
+// اتصال به دیتابیس
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "meshki";
 
-        // مسیر ذخیره ویدیو و پوستر
-        $videoPath = 'admin/vdata/' . basename($_FILES['video']['name']);
-        $thumbnailPath = 'admin/thumbnails/' . basename($_FILES['thumbnail']['name']);
+// ایجاد اتصال
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-        // آپلود فایل ویدیو
-        if (move_uploaded_file($_FILES['video']['tmp_name'], $videoPath) && move_uploaded_file($_FILES['thumbnail']['tmp_name'], $thumbnailPath)) {
-            // اتصال به دیتابیس
-            $servername = "localhost";
-            $username = "root";
-            $password = "";
-            $dbname = "meshki";
+// بررسی اتصال
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
-            $conn = new mysqli($servername, $username, $password, $dbname);
+// بررسی اینکه آیا فرم ارسال شده است
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // دریافت اطلاعات فرم
+    $artist = mysqli_real_escape_string($conn, $_POST['artist']); // نام هنرمند
+    $title = mysqli_real_escape_string($conn, $_POST['title']); // نام ویدیو
+    $description = mysqli_real_escape_string($conn, $_POST['description']); // توضیحات
+    $tags = mysqli_real_escape_string($conn, $_POST['tags']); // تگ‌ها
+    
+    // مسیر ذخیره‌سازی فایل‌ها
+    $targetDir = "mdata/uploads/videos/";
+    $posterDir = "mdata/uploads/posters/";
 
-            if ($conn->connect_error) {
-                die(json_encode(["success" => false, "error" => "خطا در اتصال به پایگاه داده: " . $conn->connect_error]));
-            }
+    // ذخیره فایل ویدیو
+    $videoFile = $targetDir . basename($_FILES["videoFile"]["name"]);
+    $videoFileType = strtolower(pathinfo($videoFile, PATHINFO_EXTENSION));
 
-            // ذخیره اطلاعات ویدیو در دیتابیس
-            $sql = "INSERT INTO tblvids (title, artist, videoPath, thumbnailPath, upload_date) VALUES (?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sssss", $title, $artist, $videoPath, $thumbnailPath, $upload_date);
+    // ذخیره فایل پوستر
+    $posterFile = $posterDir . basename($_FILES["thumbnailFile"]["name"]);
+    $posterFileType = strtolower(pathinfo($posterFile, PATHINFO_EXTENSION));
 
-            if ($stmt->execute()) {
-                echo json_encode(["success" => true]);
-            } else {
-                echo json_encode(["success" => false, "error" => "خطا در ذخیره اطلاعات ویدیو: " . $stmt->error]);
-            }
+    // بررسی اینکه فایل ویدیو معتبر است
+    if($videoFileType != "mp4" && $videoFileType != "avi" && $videoFileType != "mov" && $videoFileType != "mkv") {
+        echo json_encode(["success" => false, "message" => "فقط فرمت‌های MP4, AVI, MOV, MKV پشتیبانی می‌شوند."]);
+        exit;
+    }
 
-            $stmt->close();
-            $conn->close();
+    // بررسی اینکه فایل پوستر معتبر است
+    if($posterFileType != "jpg" && $posterFileType != "png" && $posterFileType != "jpeg") {
+        echo json_encode(["success" => false, "message" => "فقط فرمت‌های JPG, JPEG, PNG پشتیبانی می‌شوند."]);
+        exit;
+    }
+
+    // انتقال فایل‌ها به مسیر نهایی
+    if (move_uploaded_file($_FILES["videoFile"]["tmp_name"], $videoFile) && move_uploaded_file($_FILES["thumbnailFile"]["tmp_name"], $posterFile)) {
+        // ثبت اطلاعات در دیتابیس
+        $uploadDate = date('Y-m-d H:i:s'); // گرفتن تاریخ و زمان آپلود
+
+        $sql = "INSERT INTO tblvids (title, description, videoPath, thumbnailPath, upload_date)
+                VALUES ('$title', '$description', '$videoFile', '$posterFile', '$uploadDate')";
+
+        if ($conn->query($sql) === TRUE) {
+            echo json_encode(["success" => true, "message" => "ویدیو با موفقیت آپلود شد.", "video" => ["name" => $title]]);
         } else {
-            echo json_encode(["success" => false, "error" => "خطا در آپلود فایل‌ها."]);
+            echo json_encode(["success" => false, "message" => "خطا در ثبت اطلاعات در دیتابیس: " . $conn->error]);
         }
     } else {
-        echo json_encode(["success" => false, "error" => "درخواست نامعتبر."]);
+        echo json_encode(["success" => false, "message" => "خطا در آپلود فایل‌ها."]);
     }
 } else {
-    echo json_encode(["success" => false, "error" => "دسترسی غیرمجاز."]);
+    echo json_encode(["success" => false, "message" => "فقط درخواست POST معتبر است."]);
 }
+
+// بستن اتصال به دیتابیس
+$conn->close();
 ?>
