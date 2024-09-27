@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ورود | مشکی</title>
+    <title>Login | Meshki</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -74,21 +74,21 @@
 </head>
 <body>
     <div class="login-container">
-        <h2>ورود به حساب کاربری</h2>
+        <h2>Login to Meshki</h2>
         <form action="login.php" method="post">
-            <label for="username">نام کاربری:</label>
+            <label for="username">Username :</label>
             <input type="text" id="username" name="username" required>
             
-            <label for="password">رمز عبور:</label>
+            <label for="password">Password :</label>
             <input type="password" id="password" name="password" required>
             
-            <button type="submit">ورود</button>
+            <button type="submit">Login</button>
         </form>
         <?php if (!empty($error_message)): ?>
             <p class="error-message">{{error_message}}</p>
         <?php endif; ?>
-        <p>حساب کاربری ندارید؟ <a href="register.php">ثبت نام کنید</a></p>
-        <button class="register-btn" onclick="window.location.href='register.php'">ثبت نام</button>
+        <p>Don't have an account? <a href="register.php">Register</a></p>
+        <button class="register-btn" onclick="window.location.href='register.php'">Register</button>
     </div>
 </body>
 </html>

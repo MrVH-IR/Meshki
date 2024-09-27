@@ -2,11 +2,11 @@
 function generate_header($title, $search_query = '') {
     $header = <<<EOT
     <!DOCTYPE html>
-    <html lang="fa" dir="rtl">
+    <html lang="en" dir="rtl">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>$title | مشکی</title>
+        <title>$title | Meshki</title>
         <link rel="stylesheet" href="CSS/common.css">
         <link rel="stylesheet" href="CSS/pagination.css">
         <style>
@@ -33,39 +33,37 @@ function generate_header($title, $search_query = '') {
                         <span></span>
                         <span></span>
                     </div>
-                    <span class="menu-text">منو</span>
+                    <span class="menu-text">Menu</span>
                 </div>
                 <ul class="menu">
-                    <li><a href="index.php">صفحه اصلی</a></li>
-                    <li><a href="music.php">موزیک</a></li>
-                    <li><a href="music-videos.php">موزیک ویدیو</a></li>
-                    <li><a href="artists.php">هنرمندان</a></li>
-                    <li><a href="playlists.php">پلی‌لیست‌ها</a></li>
-                    <li><a href="aboutus.php">درباره ما</a></li>
+                    <li><a href="index.php">Home Page</a></li>
+                    <li><a href="music.php">Music</a></li>
+                    <li><a href="music-videos.php">Music Video</a></li>
+                    <li><a href="artists.php">Artists</a></li>
+                    <li><a href="playlists.php">Playlists</a></li>
+                    <li><a href="aboutus.php">About Us</a></li>
                     <?php if(isset(\$_SESSION['user_id']) || isset(\$_SESSION['is_admin'])): ?>
-                    <li><a href="profile.php">پروفایل من</a></li>
-                    <li><a href="logout.php">خروج</a></li>
+                    <li><a href="user\profile.php">Profile</a></li>
+                    <li><a href="logout.php">Logout</a></li>
                     <?php else: ?>
-                    <li><a href="login.php">ورود</a></li>
-                    <li><a href="register.php">ثبت نام</a></li>
+                    <li><a href="login.php">Login</a></li>
+                    <li><a href="register.php">Register</a></li>
                     <?php endif; ?>
                 </ul>
-                <?php if(isset(\$_SESSION['is_admin']) && \$_SESSION['is_admin'] === true): ?>
-                    <button id="uploadVideoBtn" class="upload-btn">آپلود ویدیو</button>
-                    <div id="uploadFormContainer" class="upload-form-container" style="display: none;">
-                     <h3>آپلود ویدیو جدید</h3>
-                  <form id="uploadForm" action="./upload_video.php" method="post" enctype="multipart/form-data">
-                     <input type="text" name="artist" placeholder="نام هنرمند" required>
-                    <input type="text" name="title" placeholder="نام موزیک ویدیو" required>
-                    <textarea name="description" placeholder="توضیحات" required></textarea>
-                    <input type="text" name="tags" placeholder="تگ‌ها (با کاما جدا کنید)" required>
-                    <input type="file" name="videoFile" id="videoFile" accept="video/*" required>
-                    <input type="file" name="thumbnailFile" id="thumbnailFile" accept="image/*" required>
-                    <button type="submit">آپلود</button>
-                    <button type="button" id="closeFormBtn">بستن</button>
-            </form>
-        </div>
-                <?php endif; ?>
+                <button id="uploadVideoBtn" class="upload-btn">Upload Video</button>
+                <div id="uploadFormContainer" class="upload-form-container" style="display: none;">
+                    <h3>Upload New Video</h3>
+                    <form id="uploadForm" method="post" enctype="multipart/form-data">
+                        <input type="text" name="artist" placeholder="Artist" required>
+                        <input type="text" name="title" placeholder="Title" required>
+                        <textarea name="description" placeholder="Description" required></textarea>
+                        <input type="text" name="tags" placeholder="Tags (comma separated)" required>
+                        <input type="file" name="videoFile" id="videoFile" accept="video/*" required>
+                        <input type="file" name="thumbnailFile" id="thumbnailFile" accept="image/*" required>
+                        <button type="submit">Upload</button>
+                        <button type="button" id="closeFormBtn">Close</button>
+                    </form>
+                </div>
             </nav>
             <script>
         
@@ -78,15 +76,15 @@ function generate_header($title, $search_query = '') {
             document.getElementById('uploadFormContainer').style.display = 'none';
         });
     </script>
-            // <div class="search-container">
-            //     <form action="search.php" method="GET" class="search-form">
-            //         <input type="text" name="q" placeholder="جستجوی آهنگ یا هنرمند" value="$search_vids" required>
-            //         <button type="submit">جستجو</button>
-            //     </form>
+            <div class="search-container">
+                <form action="searchvid.php" method="GET" class="search-form">
+                    <input type="text" name="q" placeholder="Search For Music Video" value="$search_query" required>
+                    <button type="submit">Search</button>
+                </form>
             </div>
         </header>
         <div class="background-banner">
-            <img src="./admin/banners/bgbanner.jpg" alt="بنر پس زمینه" class="background-image">
+            <img src="./admin/banners/bgbanner.jpg" alt="Background Banner" class="background-image">
         </div>
     EOT;
     return $header;
@@ -95,7 +93,7 @@ function generate_header($title, $search_query = '') {
 function generate_footer() {
     $footer = <<<EOT
         <footer>
-            <!-- فوتر را اینجا قرار دهید -->
+            <!-- Footer goes here -->
         </footer>
         <script>
             function toggleMenu() {
@@ -106,10 +104,10 @@ function generate_footer() {
                 var player = button.nextElementSibling;
                 if (player.style.display === "none") {
                     player.style.display = "block";
-                    button.textContent = "نمایش کمتر";
+                    button.textContent = "Show Less";
                 } else {
                     player.style.display = "none";
-                    button.textContent = "نمایش بیشتر";
+                    button.textContent = "Show More";
                 }
             }
         </script>
@@ -123,7 +121,7 @@ function generate_music_container($song) {
     $music_container = <<<EOT
     <div class="music-container">
         <h2 class="music-title">{$song["songName"]} - {$song["artist"]}</h2>
-        <img src="{$song["posterPath"]}" alt="{$song["songName"]} پوستر" class="music-poster">
+        <img src="{$song["posterPath"]}" alt="{$song["songName"]} Poster" class="music-poster">
         <p class="music-description">{$song["description"]}</p>
         <div class="music-tags">
     EOT;
@@ -135,11 +133,11 @@ function generate_music_container($song) {
     
     $music_container .= <<<EOT
         </div>
-        <button class="show-more-btn" onclick="togglePlayer(this)">نمایش بیشتر</button>
+        <button class="show-more-btn" onclick="togglePlayer(this)">Show More</button>
         <div class="music-player" style="display: none;">
             <audio controls>
                 <source src="{$song["songPath"]}" type="audio/mpeg">
-                مرورگر شما از پخش صوتی پشتیبانی نمی‌کند.
+                Your browser does not support the audio element.
             </audio>
         </div>
     </div>
@@ -151,13 +149,13 @@ function generate_music_container($song) {
 function generate_pagination($total_pages, $current_page, $base_url) {
     $pagination = '<div class="pagination-container"><div class="pagination">';
     if ($current_page > 1) {
-        $pagination .= "<a href=\"{$base_url}&page=" . ($current_page-1) . "\" class=\"prev\">قبلی</a>";
+        $pagination .= "<a href=\"{$base_url}&page=" . ($current_page-1) . "\" class=\"prev\">Previous</a>";
     }
     for ($i = 1; $i <= $total_pages; $i++) {
         $pagination .= "<a href=\"{$base_url}&page={$i}\" " . ($current_page == $i ? 'class="active"' : '') . ">{$i}</a>";
     }
     if ($current_page < $total_pages) {
-        $pagination .= "<a href=\"{$base_url}&page=" . ($current_page+1) . "\" class=\"next\">بعدی</a>";
+        $pagination .= "<a href=\"{$base_url}&page=" . ($current_page+1) . "\" class=\"next\">Next</a>";
     }
     $pagination .= '</div></div>';
     return $pagination;

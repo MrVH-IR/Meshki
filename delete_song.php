@@ -2,7 +2,7 @@
 if (isset($_GET['id'])) {
     $songId = $_GET['id'];
 
-    // اتصال به دیتابیس
+    // Connecting to database
     $servername = "localhost";
     $username = "root";
     $password = "";
@@ -11,10 +11,10 @@ if (isset($_GET['id'])) {
     $conn = new mysqli($servername, $username, $password, $dbname);
 
     if ($conn->connect_error) {
-        die(json_encode(["success" => false, "error" => "خطا در اتصال به پایگاه داده: " . $conn->connect_error]));
+        die(json_encode(["success" => false, "error" => "Error connecting to database: " . $conn->connect_error]));
     }
 
-    // حذف آهنگ از دیتابیس
+    // Deleting song from database
     $sql = "DELETE FROM tblsongs WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $songId);
@@ -22,12 +22,12 @@ if (isset($_GET['id'])) {
     if ($stmt->execute()) {
         echo json_encode(["success" => true]);
     } else {
-        echo json_encode(["success" => false, "error" => "خطا در حذف آهنگ: " . $stmt->error]);
+        echo json_encode(["success" => false, "error" => "Error deleting song: " . $stmt->error]);
     }
 
     $stmt->close();
     $conn->close();
 } else {
-    echo json_encode(["success" => false, "error" => "شناسه آهنگ ارسال نشده است."]);
+    echo json_encode(["success" => false, "error" => "Song ID not provided."]);
 }
 ?>

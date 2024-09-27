@@ -1,0 +1,100 @@
+body {
+    background-color: #1a1a1a; /* Dark background color */
+    color: #f8f8f8; /* Light text color */
+    font-family: Arial, sans-serif;
+    background-image: url('../admin/banners/bgbanner.jpg'); /* Adding background image */
+    background-size: cover; /* Resizes the background image */
+    background-position: center;
+}
+
+h1, h2, h3 {
+    color: #ff66b2; /* Pink color for headings */
+}
+
+button {
+    background-color: #ff66b2; /* Button background color */
+    color: white; /* Button text color */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Color change animation */
+    display: inline-block; /* Display buttons side by side */
+    margin-left: 10px; /* Space between buttons */
+}
+
+button:hover {
+    background-color: #ff3385; /* Button color on hover */
+}
+
+img {
+    border: 2px solid #ff66b2; /* Pink border for user image */
+    transition: transform 0.3s ease; /* Size change animation */
+    border-radius: 50%; /* Rounding the image */
+    position: absolute; /* Positioning the image absolutely */
+    top: 10px; /* Distance from top */
+    left: 10px; /* Distance from left */
+}
+
+img:hover {
+    transform: scale(1.05); /* بزرگنمایی تصویر هنگام هاور */
+    margin-bottom: 20px; /* فاصله زیر تصویر */
+}
+
+#genreSelect {
+    background-color: #2a2a2a;
+    color: #f8f8f8;
+    border: 2px solid #ff66b2;
+    border-radius: 25px;
+    padding: 12px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    width: 220px;
+    margin-top: 15px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FF66B2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px top 50%;
+    background-size: 12px auto;
+    box-shadow: 0 4px 6px rgba(255, 102, 178, 0.1);
+    text-align: center;
+}
+
+#genreSelect:hover, #genreSelect:focus {
+    background-color: #3a3a3a;
+    border-color: #ff3385;
+    box-shadow: 0 6px 8px rgba(255, 102, 178, 0.2);
+}
+
+#genreSelect option {
+    background-color: #2a2a2a;
+    color: #f8f8f8;
+    padding: 10px;
+}
+
+#genreSelect:hover option {
+    animation: rotateColor 2s linear infinite;
+}
+
+@keyframes rotateColor {
+    0% {
+        box-shadow: 0 0 0 2px #ff66b2;
+    }
+    25% {
+        box-shadow: 2px 0 0 2px #ff66b2;
+    }
+    50% {
+        box-shadow: 2px 2px 0 2px #ff66b2;
+    }
+    75% {
+        box-shadow: 0 2px 0 2px #ff66b2;
+    }
+    100% {
+        box-shadow: 0 0 0 2px #ff66b2;
+    }
+}
+}

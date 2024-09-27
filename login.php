@@ -1,5 +1,6 @@
 <?php
 session_start();
+var_dump($_SESSION);
 
 // خواندن محتوای قالب login.tpl
 $template = file_get_contents('template/login.tpl');
@@ -35,9 +36,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = $result->fetch_assoc();
         if (password_verify($password, $row['password'])) {
             // ورود موفقیت‌آمیز
+            $session_token = bin2hex(random_bytes(32)); // تولید توکن سشن
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['username'] = $row['username'];
-            
+
+            // ذخیره سشن کاربر در users_sessions
+            $created_at = date('Y-m-d H:i:s');
+            $end_at = date('Y-m-d H:i:s', strtotime($created_at . ' + 4 hours'));
+            $insert_session_sql = "INSERT INTO users_sessions (user_id, session_token, created_at, end_at) VALUES (?, ?, ?, ?)";
+            $insert_stmt = $conn->prepare($insert_session_sql);
+            $insert_stmt->bind_param("isss", $row['id'], $session_token, $created_at, $end_at);
+            $insert_stmt->execute();
+            $insert_stmt->close();
+
             // بررسی اینکه آیا کاربر ادمین است یا خیر
             $admin_sql = "SELECT * FROM tbladmins WHERE username = ?";
             $admin_stmt = $conn->prepare($admin_sql);
@@ -47,6 +58,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             if ($admin_result->num_rows == 1) {
                 $_SESSION['is_admin'] = true;
+
+                // ذخیره سشن ادمین در admin_sessions
+                $admin_row = $admin_result->fetch_assoc();
+                $admin_session_token = bin2hex(random_bytes(32)); // تولید توکن سشن ادمین
+                $insert_admin_session_sql = "INSERT INTO admin_sessions (admin_id, session_token, created_at, end_at) VALUES (?, ?, ?, ?)";
+                $insert_admin_stmt = $conn->prepare($insert_admin_session_sql);
+                $insert_admin_stmt->bind_param("isss", $admin_row['id'], $admin_session_token, $created_at, $end_at);
+                $insert_admin_stmt->execute();
+                $insert_admin_stmt->close();
             } else {
                 $_SESSION['is_admin'] = false;
             }

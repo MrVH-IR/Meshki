@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دانلود و پخش آنلاین موزیک و موزیک ویدیو | مشکی</title>
-    <meta name="description" content="بهترین مکان برای دانلود، گوش دادن و تماشای آنلاین موزیک و موزیک ویدیوهای جدید. گسترده‌ترین مجموعه موسیقی و موزیک ویدیو با کیفیت بالا.">
-    <meta name="keywords" content="دانلود موزیک, پخش آنلاین, موزیک ویدیو, آهنگ جدید, دانلود رایگان">
+    <title>Download and Online Play Music and Music Video | Meshki</title>
+    <meta name="description" content="The best place to download, listen to, and watch new music and music videos online. The largest collection of high-quality music and music videos.">
+    <meta name="keywords" content="download music, online play, music video, new song, free download">
     <meta name="robots" content="index, follow">
-    <meta property="og:title" content="دانلود و پخش آنلاین موزیک و موزیک ویدیو | مشکی">
-    <meta property="og:description" content="بهترین مکان برای دانلود، گوش دادن و تماشای آنلاین موزیک و موزیک ویدیوهای جدید. گسترده‌ترین مجموعه موسیقی و موزیک ویدیو با کیفیت بالا.">
+    <meta property="og:title" content="Download and Online Play Music and Music Video | Meshki">
+    <meta property="og:description" content="The best place to download, listen to, and watch new music and music videos online. The largest collection of high-quality music and music videos.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.meshki.com">
     <link rel="canonical" href="https://www.meshki.com">
@@ -23,38 +23,32 @@
                     <span></span>
                     <span></span>
                 </div>
-                <span class="menu-text">منو</span>
+                <span class="menu-text">Menu</span>
             </div>
             <ul class="menu">
-                <li><a href="../meshki/index.php">صفحه اصلی</a></li>
-                <li><a href="../meshki/music.php">موزیک</a></li>
-                <li><a href="../meshki/music-videos.php">موزیک ویدیو</a></li>
-                <li><a href="../meshki/artists.php">هنرمندان</a></li>
-                <li><a href="../meshki/playlists.php">پلی‌لیست‌ها</a></li>
-                <li><a href="../meshki/aboutus.php">درباره ما</a></li>
-                <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?>
-                    <li><a href="../meshki/profile.php">پروفایل من</a></li>
-                    <li><a href="../meshki/logout.php">خروج</a></li>
-                <?php else: ?>
-                    <li><a href="../meshki/login.php">ورود</a></li>
-                    <li><a href="../meshki/register.php">ثبت نام</a></li>
-                <?php endif; ?>
+                <li><a href="../meshki/index.php">Home Page</a></li>
+                <li><a href="../meshki/music.php">Music</a></li>
+                <li><a href="../meshki/music-videos.php">Music Video</a></li>
+                <li><a href="../meshki/artists.php">Artists</a></li>
+                <li><a href="../meshki/playlists.php">Playlists</a></li>
+                <li><a href="../meshki/aboutus.php">About Us</a></li>
+                {{USER_MENU}}
             </ul>
             <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?>
-                <button id="uploadBtn" class="upload-btn">آپلود</button>
+                <button id="uploadBtn" class="upload-btn">Upload</button>
             <?php endif; ?>
         </nav>
         <div class="search-container">
             <form action="search.php" method="GET" class="search-form">
-                <input type="text" name="q" placeholder="جستجوی آهنگ یا هنرمند" required>
-                <button type="submit">جستجو</button>
+                <input type="text" name="q" placeholder="Search for song or artist" required>
+                <button type="submit">Search</button>
             </form>
         </div>
     </header>
 
     <main>
         <div class="background-banner">
-            <img src="./admin/banners/bgbanner.jpg" alt="بنر پس زمینه" class="background-image">
+            <img src="./admin/banners/bgbanner.jpg" alt="Background Banner" class="background-image">
         </div>
         <div id="uploadedSongs"></div>
     </main>
@@ -69,7 +63,7 @@
                 menuToggle.classList.toggle('active');
             });
 
-            // اضافه کردن کد جدید برای نمایش آهنگ‌های آپلود شده
+            // Adding new code to display uploaded songs
             const uploadBtn = document.getElementById('uploadBtn');
             const uploadedSongs = document.getElementById('uploadedSongs');
 
@@ -78,21 +72,35 @@
                     const uploadForm = document.createElement('div');
                     uploadForm.innerHTML = `
                         <div id="uploadFormContainer">
-                            <h3>آپلود آهنگ جدید</h3>
+                            <h3>Upload New Song</h3>
                             <form id="uploadForm" enctype="multipart/form-data">
-                                <input type="text" name="artist" placeholder="نام هنرمند" required>
-                                <input type="text" name="songName" placeholder="نام آهنگ" required>
+                                <input type="text" name="artist" placeholder="Artist Name" required>
+                                <input type="text" name="songName" placeholder="Song Name" required>
                                 <input type="file" name="song" id="songFile" accept="audio/*" required style="display: none;">
-                                <label for="songFile" class="custom-file-upload">انتخاب فایل آهنگ</label>
+                                <label for="songFile" class="custom-file-upload">Select Song File</label>
                                 <span id="songFileName"></span>
                                 <input type="file" name="poster" id="posterFile" accept="image/*" required style="display: none;">
-                                <label for="posterFile" class="custom-file-upload">انتخاب تصویر پوستر</label>
+                                <label for="posterFile" class="custom-file-upload">Select Poster Image</label>
                                 <span id="posterFileName"></span>
-                                <textarea name="description" placeholder="توضیحات آهنگ" required></textarea>
-                                <input type="text" name="tags" placeholder="تگ‌ها (با کاما جدا کنید)" required>
+                                <textarea name="description" placeholder="Song Description" required></textarea>
+                                <input type="text" name="tags" placeholder="Tags (separated by commas)" required>
+                                <select name="genre" required>
+                                    <option value="">Select Genre</option>
+                                    <option value="pop">Pop</option>
+                                    <option value="rock">Rock</option>
+                                    <option value="hip-hop">Hip Hop</option>
+                                    <option value="electronic">Electronic</option>
+                                    <option value="classical">Classical</option>
+                                    <option value="jazz">Jazz</option>
+                                    <option value="country">Country</option>
+                                    <option value="r-and-b">R&B</option>
+                                    <option value="indie">Indie</option>
+                                    <option value="folk">Folk</option>
+                                    <option value="other">Other</option>
+                                </select>
                                 <div class="upload-form-buttons">
-                                    <button type="submit">آپلود</button>
-                                    <button type="button" onclick="closeUploadForm()">بستن</button>
+                                    <button type="submit">Upload</button>
+                                    <button type="button" onclick="closeUploadForm()">Close</button>
                                 </div>
                             </form>
                         </div>
@@ -117,7 +125,7 @@
                         e.preventDefault();
                         const formData = new FormData(form);
                         
-                        // ارسال اطلاعات به سرور (این بخش باید با کد سمت سرور شما هماهنگ شود)
+                        // Sending data to the server (this part should be coordinated with your server-side code)
                         fetch('upload_song.php', {
                             method: 'POST',
                             body: formData
@@ -125,17 +133,17 @@
                         .then(response => response.json())
                         .then(data => {
                             if(data.success) {
-                                // نمایش آهنگ آپلود شده
+                                // Display uploaded song
                                 const songElement = createSongElement(data.song);
                                 uploadedSongs.insertBefore(songElement, uploadedSongs.firstChild);
                                 closeUploadForm();
                             } else {
-                                alert('خطا در آپلود آهنگ');
+                                alert('Error uploading song');
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert('خطا در ارتباط با سرور');
+                            alert('Error connecting to server');
                         });
                     });
                 });
@@ -147,12 +155,13 @@
                 songElement.innerHTML = `
                     <button class="delete-btn">X</button>
                     <h2 class="music-title">${song.artist} - ${song.songName}</h2>
-                    <img src="${song.posterPath}" alt="${song.artist} - ${song.songName}" class="music-poster" onerror="this.onerror=null; this.src='./admin/posters/Check-For-Error-Message-min.gif'; this.alt='خطا در بارگذاری تصویر';">
+                    <img src="${song.posterPath}" alt="${song.artist} - ${song.songName}" class="music-poster" onerror="this.onerror=null; this.src='./admin/posters/Check-For-Error-Message-min.gif'; this.alt='Error loading image';">
                     <p class="music-description">${song.description}</p>
                     <div class="music-tags">
                         ${song.tags.split(',').map(tag => `<span>#${tag.trim()}</span>`).join('')}
                     </div>
-                    <button class="show-more-btn">مشاهده بیشتر</button>
+                    <p class="music-genre">Genre: ${song.genre}</p>
+                    <button class="show-more-btn">Show More</button>
                     <div class="music-player" style="display: none;">
                         <audio src="${song.songPath}"></audio>
                         <div class="controls">
@@ -161,13 +170,13 @@
                                 <div class="progress"></div>
                             </div>
                             <button class="play-pause-btn">
-                                پخش
+                                Play
                             </button>
                         </div>
                     </div>
                 `;
 
-                // اضافه کردن event listener برای دکمه "مشاهده بیشتر" در آهنگ جدید
+                // Adding event listener for "Show More" button in new song
                 const newShowMoreBtn = songElement.querySelector('.show-more-btn');
                 const newMusicPlayer = songElement.querySelector('.music-player');
                 newShowMoreBtn.addEventListener('click', function() {
@@ -191,7 +200,7 @@
             var logoutLink = document.querySelector('a[href="../meshki/logout.php"]');
             if (logoutLink) {
                 logoutLink.addEventListener('click', function(e) {
-                    if (!confirm('آیا مطمئن هستید که می‌خواهید خارج شوید؟')) {
+                    if (!confirm('Are you sure you want to log out?')) {
                         e.preventDefault();
                     }
                 });
@@ -224,7 +233,7 @@
             margin: 0;
             position: absolute;
             top: 100%;
-            right: 0;
+            right: 100;
             background-color: #000;
             width: 200px;
         }
@@ -350,6 +359,10 @@
             padding: 5px 10px;
             border-radius: 15px;
         }
+        .music-genre {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
         .show-more-btn {
             background-color: #ff69b4;
             color: #fff;
@@ -396,7 +409,7 @@
             border-radius: 5px;
             overflow: hidden;
             cursor: pointer;
-            direction: rtl;
+            direction: ltr;
         }
         .progress {
             height: 100%;
@@ -441,7 +454,8 @@
         }
         #uploadForm input[type="text"],
         #uploadForm input[type="file"],
-        #uploadForm textarea {
+        #uploadForm textarea,
+        #uploadForm select {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
@@ -532,7 +546,7 @@
             color: #f0f0f0;
         }
 
-        /* استایل جدید برای فرم جستجو */
+        /* New style for search form */
         .search-container {
             display: flex;
             justify-content: center;
@@ -577,7 +591,7 @@
             background-color: #ff1493;
         }
 
-        /* برای دستگاه‌های موبایل */
+        /* For mobile devices */
         @media (max-width: 768px) {
             .search-form input[type="text"] {
                 width: 60%;
