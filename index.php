@@ -113,7 +113,7 @@ echo $template;
 if (isset($_GET['upload_success']) && $_GET['upload_success'] == 'true') {
     echo '<div class="success-message">Song uploaded successfully.</div>';
 }
-// Displaying uploaded songs
+
 // Displaying uploaded songs
 $servername = "localhost";
 $username = "root";
@@ -238,8 +238,8 @@ if (\$_SERVER["REQUEST_METHOD"] == "POST") {
         die("Connection failed: " . \$conn->connect_error);
     }
 
-    \$sql = "INSERT INTO tblsongs (artist, songName, songPath, posterPath, description, tags, genre)
-    VALUES (?, ?, ?, ?, ?, ?, ?)";
+    \$sql = "INSERT INTO tblsongs (artist, songName, songPath, posterPath, description, tags, genre, upload_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE())";
 
     \$stmt = \$conn->prepare(\$sql);
     \$stmt->bind_param("sssssss", \$artist, \$songName, \$target_file_song, \$target_file_poster, \$description, \$tags, \$genre);

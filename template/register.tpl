@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ثبت نام | مشکی</title>
+    <title>Register | Meshki</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -56,21 +56,21 @@
 </head>
 <body>
     <div class="register-container">
-        <h2>ثبت نام</h2>
+        <h2>Register</h2>
         <form action="register.php" method="post">
-            <label for="username">نام کاربری:</label>
+            <label for="username">Username:</label>
             <input type="text" id="username" htmlspecialchars name="username" required>
             
-            <label for="email">ایمیل:</label>
+            <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
             
-            <label for="password">رمز عبور:</label>
+            <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
             
-            <label for="confirm_password">تکرار رمز عبور:</label>
+            <label for="confirm_password">Confirm Password:</label>
             <input type="password" id="confirm_password" name="confirm_password" required>
             
-            <button type="submit">ثبت نام</button>
+            <button type="submit">Register</button>
         </form>
     </div>
 </body>

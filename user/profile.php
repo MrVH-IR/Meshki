@@ -5,18 +5,18 @@ include '../configure.php';
 $template = file_get_contents('profile.tpl');
 // Check if user is logged in
 if ($_SESSION['user_id'] == null) {
-    error_log("User not logged in. Session data: " . print_r($_SESSION, true));
+    // error_log("User not logged in. Session data: " . print_r($_SESSION, true));
     header("Location: ../login.php");
     exit();
 }
 
 // Debug information
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
-echo "<pre>";
-print_r($_SESSION);
-echo "</pre>";
+// echo "<pre>";
+// print_r($_SESSION);
+// echo "</pre>";
 
 // Fetch user data from the database
 $user_id = $_SESSION['user_id'];
@@ -61,8 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['genre'])) {
                     <source src="' . htmlspecialchars($relative_path) . '" type="audio/mpeg">
                     Your browser does not support the audio element.
                   </audio>
-                  <p>Playing: ' . htmlspecialchars($song['songName']) . ' - ' . htmlspecialchars($song['artist']) . '</p>';
-            echo '<p>مسیر فایل: ' . htmlspecialchars($relative_path) . '</p>';
+                  <p>Playing: ' . htmlspecialchars($song['songName']) . ' - ' . htmlspecialchars($song['artist']) . '</p>
+                  <a href="' . htmlspecialchars($relative_path) . '" download>دانلود آهنگ</a>'; // دکمه دانلود آهنگ
+            // echo '<p>مسیر فایل: ' . htmlspecialchars($relative_path) . '</p>';
         } else {
             echo '<p>Song file not found or not readable. Path: ' . htmlspecialchars($song_path) . '</p>';
         }

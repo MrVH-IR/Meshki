@@ -10,17 +10,17 @@
     <h1>User Profile</h1>
     <div style="text-align: center;">
         <div style="border: 0px solid #ff66b2; border-radius: 10px; padding: 20px; background-color: transparent; animation: rotate-border 2s linear infinite;">
-            <div style="width: 200px; position: absolute; left: 10px; bottom: 10px; background-color: rgba(255, 255, 255, 0.8); border-radius: 10px; padding: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
+            <div class="profile_picture" style="width: 200px; position: absolute; left: 10px; bottom: 10px; background-color: rgba(255, 255, 255, 0.8); border-radius: 10px; padding: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
                 <h2 style="text-align: center;">Profile Picture</h2>
-                <form action="upload_profile_picture.php" method="POST" enctype="multipart/form-data">
-                    <input type="file" name="profile_picture" accept="image/*" required style=" color: transparent; padding: 10px; border-radius: 5px;">
+                <form action="upload_profile_picture.php" id="profile_picture" method="POST" enctype="multipart/form-data">
+                    <input type="file" class="choose-file" name="profile_picture" accept="image/*" required style=" color: transparent; padding: 10px; border-radius: 5px;">
                     <button type="submit">Upload</button>
                 </form>
                 <form action="del-picprofile.php" id="delimage" method="POST">
                     <button type="submit">Delete</button>
                 </form>
                 <form action="change_profile_picture.php" method="POST" enctype="multipart/form-data">
-                    <input type="file" name="change_profile_picture" accept="image/*" required style=" color: transparent; border: none; padding: 10px; border-radius: 5px;">
+                    <input type="file" class="choose-file" name="change_profile_picture" accept="image/*" required style=" color: transparent; border: none; padding: 10px; border-radius: 5px;">
                     <button type="submit">Change</button>
                 </form>
             </div>
@@ -46,6 +46,7 @@
                 <option value="other">Other</option>
             </select>
             <div id="music_player"></div>
+            <div id="download_music" ></div>
         </div>
     </div>
     <script src="profile.js"></script>

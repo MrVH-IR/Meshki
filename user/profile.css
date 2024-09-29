@@ -1,14 +1,17 @@
 body {
-    background-color: #1a1a1a; /* Dark background color */
-    color: #f8f8f8; /* Light text color */
-    font-family: Arial, sans-serif;
-    background-image: url('../admin/banners/bgbanner.jpg'); /* Adding background image */
-    background-size: cover; /* Resizes the background image */
+    background-color: #1a1a1a; /* رنگ پس‌زمینه تیره */
+    color: #f8f8f8; /* رنگ متن روشن */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* تغییر فونت */
+    background-image: url('../admin/banners/bgbanner.jpg'); /* تصویر پس‌زمینه */
+    background-size: cover; /* اندازه‌گیری تصویر پس‌زمینه */
     background-position: center;
+    max-width: 100vw; /* Prevents horizontal overflow */
+    overflow-x: hidden; /* Hides horizontal scrollbar */
 }
 
 h1, h2, h3 {
-    color: #ff66b2; /* Pink color for headings */
+    color: #ff66b2; /* رنگ صورتی برای عناوین */
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7); /* سایه برای عناوین */
 }
 
 button {
@@ -24,7 +27,8 @@ button {
 }
 
 button:hover {
-    background-color: #ff3385; /* Button color on hover */
+    background-color: #ff3385; /* رنگ دکمه هنگام هاور */
+    transform: scale(1.05); /* بزرگنمایی دکمه هنگام هاور */
 }
 
 img {
@@ -96,5 +100,4 @@ img:hover {
     100% {
         box-shadow: 0 0 0 2px #ff66b2;
     }
-}
 }

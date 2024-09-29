@@ -14,21 +14,36 @@ function sendGenreAndPlayMusic() {
   .then(data => {
     // Display music player
     document.getElementById('music_player').innerHTML = data;
+    // Close the form after action
+    document.getElementById('profilePictureForm').style.display = 'none';
   })
   .catch(error => {
     console.error('Error:', error);
   });
 }
 
-// Add button to the page
-var button = document.createElement('button');
-button.innerHTML = 'Play Music';
-button.onclick = sendGenreAndPlayMusic;
-document.getElementById('recommendedMusic').appendChild(button);
+// Create profile picture form
+var form = document.createElement('div');
+form.id = 'profilePictureForm';
+form.style.display = 'none'; // Initially hidden
+form.innerHTML = `
+  <button onclick="sendGenreAndPlayMusic()">Play Music</button>
+  <button onclick="document.getElementById('profilePictureForm').style.display='none'">X</button>
+  <button id="downloadButton" onclick="downloadMusic()">Download Music</button>
+`;
+document.getElementById('recommendedMusic').appendChild(form);
+
+// Function to download music
+function downloadMusic() {
+  var selectedGenre = document.getElementById('genreSelect').value;
+  // Implement download logic here
+  alert('Downloading music for genre: ' + selectedGenre);
+}
+
+// Add event listener to the profile picture to toggle the form
+document.querySelector('img').onclick = toggleProfilePictureForm;
 
 // Add player display area
 var playerArea = document.createElement('div');
 playerArea.id = 'music_player';
 document.getElementById('recommendedMusic').appendChild(playerArea);
-
-

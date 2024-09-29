@@ -603,4 +603,7 @@
         }
     </style>
 </body>
+<footer style="text-align: center; position: fixed; bottom: 0; left: 0; width: 100%; padding: 10px 0;">
+    <p style="color: pink; margin: 0;">&copy; <?php echo date('Y'); ?> Meshki. All rights reserved.</p>
+</footer>
 </html>
