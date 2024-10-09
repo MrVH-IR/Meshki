@@ -8,6 +8,24 @@
 </head>
 <body>
     <h1>User Profile</h1>
+    <nav>
+        <div class="menu-toggle">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <span class="menu-text"></span>
+        </div>
+        <ul class="menu">
+            <li><a href="../index.php">Home Page</a></li>
+            <li><a href="../music.php">Musics</a></li>
+            <li><a href="../music-videos.php">Music Videos</a></li>
+            <li><a href="../artists.php">Artists</a></li>
+            <li><a href="../playlists.php">Playlists</a></li>
+            <li><a href="../aboutus.php">About Us</a></li>
+        </ul>
+    </nav>
     <div style="text-align: center;">
         <div style="border: 0px solid #ff66b2; border-radius: 10px; padding: 20px; background-color: transparent; animation: rotate-border 2s linear infinite;">
             <div class="profile_picture" style="width: 200px; position: absolute; left: 10px; bottom: 10px; background-color: rgba(255, 255, 255, 0.8); border-radius: 10px; padding: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
@@ -47,6 +65,9 @@
             </select>
             <div id="music_player"></div>
             <div id="download_music" ></div>
+            <!-- <div id="musicControls"></div>
+            <div id="music_player"></div>
+            <div id="download_music"></div> -->
         </div>
     </div>
     <script src="profile.js"></script>

@@ -20,19 +20,24 @@ if ($_SESSION['user_id'] == null) {
 
 // Fetch user data from the database
 $user_id = $_SESSION['user_id'];
-$query = "SELECT imgpath, reg_date FROM tblusers WHERE id = '$user_id'";
+$query = "SELECT imgpath, reg_date ,gender FROM tblusers WHERE id = '$user_id'";
 $result = $conn->query($query);
 $user_data = $result->fetch_assoc();
 
 $imgpath = $user_data['imgpath'];
+$gender = $user_data['gender'];
 $registration_date = !empty($user_data['reg_date']) ? $user_data['reg_date'] : 'Not Available';
 $template = str_replace('{registration_date}', $registration_date, $template);
 
 // Display user profile picture
 if (!empty($imgpath) && file_exists('uploads/' . basename($imgpath))) {
-    echo '<img src="uploads/' . htmlspecialchars(basename($imgpath)) . '" alt="Profile Picture" style="width:150px; height:auto;">';
+    echo '<img src="uploads/' . htmlspecialchars(basename($imgpath)) . '" alt="تصویر نمایه" style="width:150px; height:auto;">';
 } else {
-    echo '<img src="uploads/default.png" alt="Default Profile Picture" style="width:150px; height:auto;">';
+    if ($gender == 'female') {
+        echo '<img src="uploads/default1.png" alt="Default Female Profile Picture" style="width:150px; height:auto;">';
+    } else {
+        echo '<img src="uploads/default.png" alt="Default Male Profile Picture" style="width:150px; height:auto;">';
+    }
 }
 
 // Get user's favorite music genre and play a random song from that genre
@@ -62,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['genre'])) {
                     Your browser does not support the audio element.
                   </audio>
                   <p>Playing: ' . htmlspecialchars($song['songName']) . ' - ' . htmlspecialchars($song['artist']) . '</p>
-                  <a href="' . htmlspecialchars($relative_path) . '" download>دانلود آهنگ</a>'; // دکمه دانلود آهنگ
+                  <a href="' . htmlspecialchars($relative_path) . '" download>Download Song</a>'; // Download button
             // echo '<p>مسیر فایل: ' . htmlspecialchars($relative_path) . '</p>';
         } else {
             echo '<p>Song file not found or not readable. Path: ' . htmlspecialchars($song_path) . '</p>';

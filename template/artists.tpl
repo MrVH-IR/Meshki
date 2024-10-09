@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Videos | Meshki</title>
-    <!-- <link rel="stylesheet" href="../CSS/artists.css"> -->
-    <!-- <link rel="stylesheet" href="../CSS/pagination.css"> -->
     <script src="../JS/artists.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -43,7 +41,7 @@
             margin: 0;
             position: absolute;
             top: 100%;
-            right: 100;
+            right: 0;
             background-color: #000;
             width: 200px;
         }
@@ -182,8 +180,129 @@
                 width: 40%;
             }
         }
-    </style>
 
+        /* استایل جدید برای صفحه هنرمندان */
+        .artists-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .artists-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 20px;
+        }
+
+        .artist-item {
+            width: 30%;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+        .artist-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .artist-item img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .artist-item h3 {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #961576;
+        }
+
+        .artist-item p {
+            font-size: 14px;
+            margin: 10px;
+            color: #666;
+        }
+
+        .artist-item a {
+            display: block;
+            text-align: center;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            margin: 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        
+
+        .artist-item a:hover {
+            background-color: #cf26ab;
+        }
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .pagination {
+            display: inline-flex;
+            background-color: tra;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .pagination a {
+            padding: 10px 15px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid #ff69b4;
+            margin: 0 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #ff69b4;
+        }
+
+        .pagination a.active {
+            background-color: #fff;
+            color: #ff69b4;
+            border: 2px solid #ff69b4;
+        }
+
+        .pagination a:hover:not(.active) {
+            background-color: #ddd;
+        }
+
+        .pagination .prev, .pagination .next {
+            background-color: #ff69b4;
+            color: white;
+            cursor: pointer;
+            border: 2px solid #ff69b4;
+        }
+
+        .pagination .prev:hover, .pagination .next:hover {
+            background-color: #ddd;
+            color: #ff69b4;
+        }
+
+        /* برای دستگاه‌های موبایل */
+        @media (max-width: 768px) {
+            .artists-row {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .artist-item {
+                width: 80%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -226,17 +345,16 @@
             <img src="./admin/banners/bgbanner.jpg" alt="Background Banner" class="background-image">
         </div>
     <div class="artists-container">
-        <div class="artists-row">
+        <div class="artists-grid">
             <div class="artist-item">
-                <img src="admin/artists/images/artist1.jpg" alt="Artist 1">
-                <h3><?php echo $artist_name; ?></h3>
+                <!-- Artist content here -->
             </div>
         </div>
     </div>
 </main>
 </body>
-<footer style="text-align: center; position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(0, 0, 0, 0.7); padding: 10px 0;">
+<!-- <footer style="text-align: center; position: fixed; bottom: 0; left: 0; width: 100%; padding: 10px 0;">
     <p style="color: pink; margin: 0;">&copy; <?php echo date('Y'); ?> Meshki. All rights reserved.</p>
-</footer>
+</footer> -->
 
 </html>

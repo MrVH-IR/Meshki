@@ -2,6 +2,11 @@
 function sendGenreAndPlayMusic() {
   var selectedGenre = document.getElementById('genreSelect').value;
   
+  if (!selectedGenre) {
+    alert('Please select a genre');
+    return;
+  }
+
   // Send request to server
   fetch('profile.php', {
     method: 'POST',
@@ -15,7 +20,7 @@ function sendGenreAndPlayMusic() {
     // Display music player
     document.getElementById('music_player').innerHTML = data;
     // Close the form after action
-    document.getElementById('profilePictureForm').style.display = 'none';
+    //document.getElementById('profilePictureForm').style.display = 'none';
   })
   .catch(error => {
     console.error('Error:', error);
@@ -23,15 +28,24 @@ function sendGenreAndPlayMusic() {
 }
 
 // Create profile picture form
-var form = document.createElement('div');
-form.id = 'profilePictureForm';
-form.style.display = 'none'; // Initially hidden
-form.innerHTML = `
+//var form = document.createElement('div');
+//form.id = 'profilePictureForm';
+//form.style.display = 'none'; // Initially hidden
+// form.innerHTML = `
+//   <button onclick="sendGenreAndPlayMusic()">Play Music</button>
+//   <button onclick="document.getElementById('profilePictureForm').style.display='none'">X</button>
+//   <button id="downloadButton" onclick="downloadMusic()">Download Music</button>
+// `;
+// document.getElementById('recommendedMusic').appendChild(form);
+
+// Create music controls including the Play button
+var musicControls = document.createElement('div');
+musicControls.id = 'musicControls';
+musicControls.innerHTML = `
   <button onclick="sendGenreAndPlayMusic()">Play Music</button>
-  <button onclick="document.getElementById('profilePictureForm').style.display='none'">X</button>
-  <button id="downloadButton" onclick="downloadMusic()">Download Music</button>
 `;
-document.getElementById('recommendedMusic').appendChild(form);
+
+document.getElementById('recommendedMusic').appendChild(musicControls);
 
 // Function to download music
 function downloadMusic() {
