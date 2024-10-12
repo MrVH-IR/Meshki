@@ -1,6 +1,7 @@
 <?php
 session_start();
-include '../configure.php';
+include '../includes/init.php';
+global $conn;
 // include 'profile.tpl';
 $template = file_get_contents('profile.tpl');
 // Check if user is logged in
@@ -17,12 +18,27 @@ if ($_SESSION['user_id'] == null) {
 // echo "<pre>";
 // print_r($_SESSION);
 // echo "</pre>";
+// function sendCode() {
+//     // ارسال درخواست به profile.php با روش POST
+//     var xhr = new XMLHttpRequest();
+//     xhr.open("POST", "profile.php", true); 
+//     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+//     xhr.onreadystatechange = function() {
+//         if (xhr.readyState === 4 && xhr.status === 200) {
+//             alert("Verification code sent to your email.");
+//         }
+//     };
+//     xhr.send("send_code=true"); // ارسال داده برای مشخص کردن درخواست ارسال کد
+// }
+
 
 // Fetch user data from the database
 $user_id = $_SESSION['user_id'];
-$query = "SELECT imgpath, reg_date ,gender FROM tblusers WHERE id = '$user_id'";
-$result = $conn->query($query);
-$user_data = $result->fetch_assoc();
+$query = "SELECT imgpath, reg_date ,gender FROM tblusers WHERE id = :user_id";
+$stmt = $conn->prepare($query);
+$stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+$stmt->execute();
+$user_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
 $imgpath = $user_data['imgpath'];
 $gender = $user_data['gender'];
@@ -45,13 +61,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['genre'])) {
     $selected_genre = $_POST['genre'];
     
     // Search for a song with the selected genre
-    $query = "SELECT songPath, songName, artist FROM tblsongs WHERE genre = ? ORDER BY RAND() LIMIT 1";
+    $query = "SELECT songPath, songName, artist FROM tblsongs WHERE genre = :genre ORDER BY RAND() LIMIT 1";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $selected_genre);
+    $stmt->bindParam(':genre', $selected_genre, PDO::PARAM_STR);
     $stmt->execute();
-    $result = $stmt->get_result();
+    $song = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    if ($song = $result->fetch_assoc()) {
+    if ($song) {
         $base_path = realpath(__DIR__ . '/../');
         $song_path = $base_path . '/' . $song['songPath'];
         error_log("Base path: " . $base_path);
@@ -77,6 +93,145 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['genre'])) {
     }
     exit; // Exit after sending response
 }
+
+// Check if the user's email is verified
+try {
+    $query = "SELECT is_verified, email FROM tblusers WHERE id = :user_id";
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $userEmail = $user['email'];
+} catch (PDOException $e) {
+    die("Error fetching user data: " . $e->getMessage());
+}
+
+// Generate a random verification code
+// $verificationCode = rand(100000, 999999);
+
+// use PHPMailer\PHPMailer\PHPMailer;
+// use PHPMailer\PHPMailer\Exception;
+
+// require '../vendor/autoload.php'; // or the path to PHPMailer files if added manually
+
+// $mail = new PHPMailer(true);
+// try {
+//     //Server settings
+//     $mail->isSMTP();
+//     $mail->Host = 'smtp.gmail.com';
+//     $mail->SMTPAuth = true;
+//     $mail->Username = ''; // Your Gmail email
+//     $mail->Password = ''; // Gmail password
+//     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+//     $mail->Port = 587;
+
+//     //Recipients
+//     $mail->setFrom('', 'Mailer');
+//     $mail->addAddress($userEmail); // User's email
+
+//     // Content
+//     $mail->isHTML(true);
+//     $mail->Subject = 'Your Verification Code';
+//     $mail->Body    = 'Your verification code is: ' . $verificationCode;
+
+//     $mail->send();
+//     echo 'Verification code has been sent to your email.';
+// } catch (Exception $e) {
+//     echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+// }
+
+// Save the code in the database for this user (you can store it in a separate table or directly in `tblusers`)
+// For example, store it in a column named `verification_code`
+
+// $sql = "UPDATE tblusers SET verification_code = ? WHERE id = ?";
+// $stmt = $conn->prepare($sql);
+// $stmt->execute([$verificationCode, $user_id]);
+
+// Send the code to the user's email
+// $to = $userEmail;
+// $subject = "Your Verification Code";
+// $message = "Your verification code is: " . $verificationCode;
+// mail($to, $subject, $message);
+
+// Check if the user's email is verified
+try {
+    $query = "SELECT is_verified, email FROM tblusers WHERE id = :user_id";
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $userEmail = $user['email'];
+} catch (PDOException $e) {
+    die("Error fetching user data: " . $e->getMessage());
+}
+
+if ($user['is_verified'] == 0) {
+    echo '<div class="hamburger-menu" style="position: fixed; bottom: 10px; right: 10px;">
+            <button class="hamburger-button" onclick="toggleForm()">☰ Verify</button>
+            <div id="verificationForm" style="display: none;">
+                <form action="verify.php" method="post">
+                    <input type="text" name="verification_code" placeholder="Enter verification code">
+                    <button type="submit">Verify</button>
+                    <button type="button" onclick="sendCode()">Send Code (Email)</button>
+                </form>
+            </div>
+          </div>
+          <script>
+            function toggleForm() {
+                var form = document.getElementById("verificationForm");
+                if (form.style.display === "none") {
+                    form.style.display = "block";
+                } else {
+                    form.style.display = "none";
+                }
+            }
+            function sendCode() {
+                alert("Verification code sent to your email.");
+            }
+          </script>';
+} else {
+    echo "Your email is verified.";
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['send_code'])) {
+
+    // Generate a random verification code
+    $verificationCode = rand(100000, 999999);
+
+    require '../vendor/autoload.php'; // or the path to PHPMailer files if added manually
+
+    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+    try {
+        //Server settings
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = ''; // Your Gmail email
+        $mail->Password = ''; // Gmail password
+        $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        //Recipients
+        $mail->setFrom('', 'Mailer');
+        $mail->addAddress($userEmail); // User's email
+
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = 'Your Verification Code';
+        $mail->Body    = 'Your verification code is: ' . $verificationCode;
+
+        $mail->send();
+        echo 'Verification code has been sent to your email.';
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+var_dump($_SESSION);
+    // Save the code in the database for this user (you can store it in a separate table or directly in `tblusers`)
+    $sql = "UPDATE tblusers SET verification_code = ? WHERE user_id = $user_id";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$verificationCode, $user_id]);
+}
+
 
 echo $template;
 ?>
