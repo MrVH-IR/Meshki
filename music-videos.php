@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'CSS/common_functions.php';
-include 'configure.php';
+include './includes/init.php';
 
 $admin = false;
 if(!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true){
@@ -18,16 +18,17 @@ $offset = ($page - 1) * $videos_per_page;
 // Query to get the total number of videos
 $count_sql = "SELECT COUNT(*) as total FROM tblvids";
 $count_result = $conn->query($count_sql);
-$count_row = $count_result->fetch_assoc();
+$count_row = $count_result->fetch(PDO::FETCH_ASSOC);
 $total_videos = $count_row['total'];
 $total_pages = ceil($total_videos / $videos_per_page);
 
 // Query to get the videos with a limit on the number
-$sql = "SELECT * FROM tblvids ORDER BY upload_date DESC LIMIT ?, ?";
+$sql = "SELECT * FROM tblvids ORDER BY upload_date DESC LIMIT :offset, :videos_per_page";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ii", $offset, $videos_per_page);
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+$stmt->bindParam(':videos_per_page', $videos_per_page, PDO::PARAM_INT);
 $stmt->execute();
-$result = $stmt->get_result();
+$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 echo generate_header("Music Videos");
 ?>
@@ -43,8 +44,8 @@ echo generate_header("Music Videos");
     <div class="video-grid">
         <?php
         $count = 0;
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
+        if (count($result) > 0) {
+            foreach($result as $row) {
                 if ($count % 4 == 0) {
                     echo '<div class="video-row">';
                 }
@@ -135,6 +136,4 @@ echo generate_header("Music Videos");
 
 <?php
 echo generate_footer();
-$stmt->close();
-$conn->close();
 ?>

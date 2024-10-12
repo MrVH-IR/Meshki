@@ -2,6 +2,53 @@
 session_start();
 include 'template/artists.tpl';
 
+// Function to search artists
+function searchArtists($query) {
+    try {
+        $db = new PDO('mysql:host=localhost;dbname=meshki', 'root', '');
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmt = $db->prepare('SELECT DISTINCT artist FROM tblsongs WHERE artist LIKE :query');
+        $stmt->bindParam(':query', $query, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        return ['error' => $e->getMessage()];
+    }
+}
+
+// Check search request
+if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['query'])) {
+    $query = '%' . $_GET['query'] . '%';
+    $results = searchArtists($query);
+    
+    if (!isset($results['error'])) {
+        echo '<h1 style="text-align: center; color: pink;">Search results for: ' . htmlspecialchars($_GET['query']) . '</h1>';
+        echo '<div class="artists-container">';
+        echo '<div class="artists-grid">';
+        foreach ($results as $result) {
+            $artist_name = htmlspecialchars($result['artist']);
+            $image_path = 'admin/artists/' . $artist_name . '.jpg';
+            
+            echo '<div class="artist-item">';
+            echo '<a href="?artist=' . urlencode($artist_name) . '">';
+            if (file_exists($image_path)) {
+                echo '<img src="' . $image_path . '" alt="' . $artist_name . '">';
+            } else {
+                echo '<img src="admin/artists/default.jpg" alt="Default picture">';
+            }
+            echo '<h3>' . $artist_name . '</h3>';
+            echo '</a>';
+            echo '</div>';
+        }
+        echo '</div>';
+        echo '</div>';
+    } else {
+        echo 'Error: ' . $results['error'];
+    }
+} else {
+    // Show all artists
+}
+
 $selected_artist = isset($_GET['artist']) ? $_GET['artist'] : null;
 
 if ($selected_artist) {
@@ -32,11 +79,11 @@ if ($selected_artist) {
         echo '</ul>';
         echo '</div>';
         echo '<div id="audioPlayerContainer" style="display:none; position: relative; text-align: center; margin-top: 20px;">';
-        echo '<audio id="audioPlayer" controls style="width: 100%;">';
+        echo '<audio id="audioPlayer" controls style="width: 50%;">';
         echo '<source id="audioSource" src="" type="audio/mpeg">';
         echo 'Your browser does not support the audio element.';
         echo '</audio>';
-        echo '<button onclick="closePlayer()" style="position: absolute; top: 0; right: 0; background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">X</button>';
+        echo '<button onclick="closePlayer()" style="position: 100; top: 0; right: 0; background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">X</button>';
         echo '</div>';
         echo '<script>';
         echo 'function playSong(songPath) {';
@@ -87,8 +134,8 @@ if ($selected_artist) {
         $count_stmt = $db->query('SELECT COUNT(DISTINCT artist) as total FROM tblsongs');
         $total_artists = $count_stmt->fetchColumn();
         
-        // Get artists with pagination
-        $stmt = $db->prepare('SELECT DISTINCT artist, upload_date FROM tblsongs ORDER BY upload_date DESC LIMIT :offset, :items_per_page');
+        // دریافت هنرمندان منحصر به فرد با صفحه‌بندی
+        $stmt = $db->prepare('SELECT DISTINCT artist, MAX(upload_date) as latest_upload FROM tblsongs GROUP BY artist ORDER BY latest_upload DESC LIMIT :offset, :items_per_page');
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->bindParam(':items_per_page', $items_per_page, PDO::PARAM_INT);
         $stmt->execute();
@@ -97,14 +144,7 @@ if ($selected_artist) {
         // Display artists with images
         echo '<div class="artists-grid">';
         $artist_count = 0;
-        $displayed_artists = [];
         foreach ($artists as $artist) {
-            $artist_name = htmlspecialchars($artist['artist']);
-            if (in_array($artist_name, $displayed_artists)) {
-                continue; // Skip if artist is already displayed
-            }
-            $displayed_artists[] = $artist_name;
-
             if ($artist_count % 3 == 0) {
                 // Start a new row for every three artists
                 echo '<div class="artists-row">';

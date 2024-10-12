@@ -252,11 +252,14 @@
         }
 
         .pagination {
-            display: inline-flex;
-            background-color: tra;
+            display: flex;
+            justify-content: center;
+            background-color: transparent;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            margin: 0 auto;
+            width: fit-content;
         }
 
         .pagination a {
@@ -335,7 +338,7 @@
     </header>
     <main>
     <div class="search-container">
-        <form class="search-form" action="search.php" method="GET">
+        <form class="search-form" action="artists.php" method="GET">
             <input type="text" name="query" placeholder="Search...">
             <button type="submit">Search</button>
         </form>

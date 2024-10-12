@@ -1,0 +1,401 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #ff69b4;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+#playlists {
+    padding: 20px;
+}
+
+.playlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.playlist-item {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.playlist-item:hover {
+    transform: translateY(-5px);
+}
+
+.playlist-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.playlist-item h3 {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #333;
+}
+
+#playlists h2 {
+    color: #ff69b4;
+    text-align: center;
+}
+
+#createPlaylistBtn {
+    background-color: #ff69b4; /* رنگ پس‌زمینه صورتی */
+    color: white; /* رنگ متن سفید */
+    border: none; /* حذف حاشیه */
+    padding: 10px 20px; /* فاصله داخلی */
+    border-radius: 5px; /* گوشه‌های گرد */
+    cursor: pointer; /* نشانگر موس به شکل دست */
+    font-size: 16px; /* اندازه فونت */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* انتقال برای تغییر رنگ پس‌زمینه و تغییر مکان */
+}
+
+#createPlaylistBtn:hover {
+    background-color: #e60073; /* تغییر رنگ پس‌زمینه به صورتی پررنگ با هاور */
+    transform: scale(1.05); /* بزرگ‌تر شدن دکمه با هاور */
+}
+
+
+#createPlaylistForm {
+    background-color: #f0f8ff; /* رنگ پس‌زمینه زیبا */
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* سایه زیبا */
+    padding: 20px;
+    margin: 60px auto; /* مرکز کردن فرم */
+    width: 40%; /* کوچک‌تر کردن فرم از سمت چپ و راست */
+    max-width: 500px; /* حداکثر عرض فرم */
+    transition: background-color 0.3s ease; /* انتقال برای تغییر رنگ پس‌زمینه */
+}
+
+#createPlaylistForm:hover {
+    background-color: #e60073; /* تغییر رنگ پس‌زمینه به صورتی پررنگ با هاور */
+}
+
+#createPlaylistForm h2 {
+    color: #ff69b4;
+    text-align: center;
+}
+
+#createPlaylistForm form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#createPlaylistForm label {
+    font-weight: bold;
+}
+
+#createPlaylistForm input[type="text"],
+#createPlaylistForm input[type="file"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#createPlaylistForm button {
+    background-color: #ff69b4;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#createPlaylistForm button:hover {
+    background-color: #e60073;
+}
+
+#genre {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    color: #333;
+    font-size: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#genre:focus {
+    border-color: #ff69b4;
+    box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
+    outline: none;
+}
+
+.genre-grid {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+.genre-item {
+    flex: 0 0 calc(33.333% - 20px); /* عرض ثابت با در نظر گرفتن فاصله */
+    max-width: calc(33.333% - 20px); /* حداکثر عرض */
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.genre-item:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.genre-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+    transition: transform 0.3s ease;
+}
+
+.genre-image:hover {
+    transform: scale(1.05);
+}
+
+.genre-item h3 {
+    padding: 10px;
+    margin: 0;
+    background-color: rgba(255, 105, 180, 0.8);
+    color: white;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .genre-item {
+        flex: 0 0 calc(50% - 20px);
+        max-width: calc(50% - 20px);
+    }
+}
+
+@media (max-width: 480px) {
+    .genre-item {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+.song-item {
+    margin-top: 20px;
+    flex: 0 0 calc(33.333% - 20px); /* عرض ثابت با در نظر گرفتن فاصله */
+    max-width: calc(33.333% - 20px); /* حداکثر عرض */
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+    display: inline-block; /* نمایش به صورت بلوک درون خطی */
+    vertical-align: top; /* تراز عمودی بالا */
+}
+
+.song-item:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.song-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+    transition: transform 0.3s ease;
+}
+
+.song-item img:hover {
+    transform: scale(1.05);
+}
+
+.song-item h3 {
+    padding: 10px;
+    margin: 0;
+    background-color: rgba(255, 105, 180, 0.8);
+    color: white;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .song-item {
+        flex: 0 0 calc(50% - 20px);
+        max-width: calc(50% - 20px);
+    }
+}
+
+@media (max-width: 480px) {
+    .song-item {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+
+#songs-list {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#songs-list li {
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#songs-list li p {
+    margin: 0;
+    color: #333;
+}
+
+#songs-list li button {
+    background-color: #ff69b4;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#songs-list li button:hover {
+    background-color: #e60073;
+}
+
+#backToArtists {
+    display: inline-block;
+    text-decoration: none;
+    color: #ff69b4;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: 2px solid #ff69b4;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+#backToArtists:hover {
+    background-color: #ff69b4;
+    color: white;
+}
+
+nav {
+    background-color: #000;
+    padding: 8px;
+    position: fixed;
+    top: 0;
+    right: 100%;
+    left: auto;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu {
+    display: none;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #000;
+    width: 200px;
+}
+
+.menu.active {
+    display: block;
+}
+
+.menu li {
+    margin-bottom: 8px;
+}
+
+.menu a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 14px;
+    display: block;
+    padding: 8px;
+}
+
+.menu a:hover {
+    color: #ff69b4;
+}
+
+.menu-toggle {
+    cursor: pointer;
+    padding: 8px;
+    display: inline-block;
+    position: relative;
+    float: right;
+}
+
+.hamburger {
+    display: inline-block;
+    width: 25px;
+    height: 18px;
+    position: relative;
+}
+
+.hamburger span {
+    display: block;
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background: #fff;
+    border-radius: 2px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: .25s ease-in-out;
+}
+
+.hamburger span:nth-child(1) {
+    top: 0px;
+}
+
+.hamburger span:nth-child(2) {
+    top: 7px;
+}
+
+.hamburger span:nth-child(3) {
+    top: 14px;
+}
+
+.menu-text {
+    display: none;
+    color: #fff;
+    margin-left: 8px;
+    font-size: 14px;
+}
+
+.menu-toggle:hover .hamburger {
+    display: none;
+}
+
+.menu-toggle:hover .menu-text {
+    display: inline-block;
+}
