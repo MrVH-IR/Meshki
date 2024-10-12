@@ -1,21 +1,27 @@
 <?php
 session_start();
-include '../configure.php';
+include '../includes/init.php';
 include 'profile.php';
+
+global $conn;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_SESSION['user_id'];
     
-    // Get Current Image Path From Database
-    $query = "SELECT imgpath FROM tblusers WHERE id = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $user_data = $result->fetch_assoc();
-    $current_imgpath = $user_data['imgpath'];
+    try {
+        // دریافت مسیر تصویر فعلی از دیتابیس
+        $query = "SELECT imgpath FROM tblusers WHERE id = :user_id";
+        $stmt = $conn->prepare($query);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+        $current_imgpath = $user_data['imgpath'];
+    } catch (PDOException $e) {
+        echo "خطا در دریافت مسیر تصویر: " . $e->getMessage();
+        exit();
+    }
     
-    // Check If File Is Uploaded
+    // بررسی آپلود فایل
     if (isset($_FILES["change_profile_picture"]) && is_array($_FILES["change_profile_picture"])) {
         $file = $_FILES["change_profile_picture"];
         
@@ -23,46 +29,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $target_dir = "uploads/";
             $target_file = $target_dir . basename($file["name"]);
             $uploadOk = 1;
-            $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+            $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
             
-            // Check If Image Is Valid
+            // بررسی اعتبار تصویر
             $check = getimagesize($file["tmp_name"]);
-            if($check !== false) {
+            if ($check !== false) {
                 $uploadOk = 1;
             } else {
-                echo "Selected File Is Not An Image.";
+                echo "فایل انتخاب شده تصویر نیست.";
                 $uploadOk = 0;
             }
             
-            // If Upload Is Allowed
+            // اگر آپلود مجاز باشد
             if ($uploadOk == 1) {
                 if (move_uploaded_file($file["tmp_name"], $target_file)) {
-                    // Delete Previous Image From Server
+                    // حذف تصویر قبلی از سرور
                     if (!empty($current_imgpath) && file_exists($current_imgpath)) {
                         unlink($current_imgpath);
                     }
                     
-                    // Update Image Path In Database
-                    $update_query = "UPDATE tblusers SET imgpath = ? WHERE id = ?";
-                    $stmt = $conn->prepare($update_query);
-                    $stmt->bind_param("si", $target_file, $user_id);
-                    if ($stmt->execute()) {
-                        echo "Profile Picture Successfully Changed.";
-                    } else {
-                        echo "Error In Updating Database: " . $conn->error;
+                    try {
+                        // به‌روزرسانی مسیر تصویر در دیتابیس
+                        $update_query = "UPDATE tblusers SET imgpath = :imgpath WHERE id = :user_id";
+                        $stmt = $conn->prepare($update_query);
+                        $stmt->bindParam(':imgpath', $target_file, PDO::PARAM_STR);
+                        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+                        if ($stmt->execute()) {
+                            echo "تصویر پروفایل با موفقیت تغییر کرد.";
+                        } else {
+                            echo "خطا در به‌روزرسانی دیتابیس: " . $conn->errorInfo()[2];
+                        }
+                    } catch (PDOException $e) {
+                        echo "خطا در به‌روزرسانی دیتابیس: " . $e->getMessage();
                     }
                 } else {
-                    echo "Error In Uploading File " . $file["error"];
+                    echo "خطا در آپلود فایل " . $file["error"];
                 }
             }
         } else {
-            echo "Error In Uploading File " . $file["error"];
+            echo "خطا در آپلود فایل " . $file["error"];
         }
     } else {
-        echo "No File Selected For Upload.";
+        echo "هیچ فایلی برای آپلود انتخاب نشده است.";
     }
     
-    // Redirect To Profile Page
+    // بازگشت به صفحه پروفایل
     header("Location: profile.php");
     exit();
 }

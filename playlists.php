@@ -2,7 +2,10 @@
 session_start();
 include 'includes/init.php';
 include 'template/playlists.tpl';
-
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
 $message = '';
 
 function getPlaylists($user_id) {
@@ -31,6 +34,40 @@ function createPlaylist($user_id, $name, $thumbnailPath) {
     }
 }
 
+function togglePlayer() {
+    echo '<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var showMoreButton = document.createElement("button");
+            showMoreButton.textContent = "Show More";
+            showMoreButton.style.display = "block";
+            showMoreButton.style.margin = "20px auto";
+            showMoreButton.style.padding = "10px 20px";
+            showMoreButton.style.backgroundColor = "#f0f0f0";
+            showMoreButton.style.border = "none";
+            showMoreButton.style.cursor = "pointer";
+            
+            var playerContainer = document.createElement("div");
+            playerContainer.style.display = "none";
+            playerContainer.style.textAlign = "center";
+            playerContainer.innerHTML = \'<audio controls><source src="path_to_your_song.mp3" type="audio/mpeg">Your browser does not support the audio element.</audio>\';
+            
+            showMoreButton.addEventListener("click", function() {
+                if (playerContainer.style.display === "none") {
+                    playerContainer.style.display = "block";
+                    showMoreButton.textContent = "Show Less";
+                } else {
+                    playerContainer.style.display = "none";
+                    showMoreButton.textContent = "Show More";
+                }
+            });
+            
+            document.body.appendChild(showMoreButton);
+            document.body.appendChild(playerContainer);
+        });
+    </script>';
+}
+
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['playlistName'])) {
     $user_id = $_SESSION['user_id'];
     $name = $_POST['playlistName'];
@@ -54,25 +91,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['playlistName'])) {
         exit();
     }
 }
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $playlists = getPlaylists($user_id);
 
-$user_id = $_SESSION['user_id'];
-$playlists = getPlaylists($user_id);
-
-if (!isset($playlists['error'])) {
-    echo '<div class="playlist-grid">';
-    foreach ($playlists as $playlist) {
-        echo '<div class="playlist-item">';
-        echo '<a href="playlists.php?id=' . $playlist['id'] . '">';
-        echo '<img src="' . htmlspecialchars($playlist['thumbnailPath']) . '" alt="' . htmlspecialchars($playlist['name']) . '">';
-        echo '<h3>' . htmlspecialchars($playlist['name']) . '</h3>';
-        echo '</a>';
+    if (!isset($playlists['error'])) {
+        echo '<div class="playlist-grid">';
+        foreach ($playlists as $playlist) {
+            echo '<div class="playlist-item">';
+            echo '<a href="playlists.php?id=' . $playlist['id'] . '">';
+            echo '<img src="' . htmlspecialchars($playlist['thumbnailPath']) . '" alt="' . htmlspecialchars($playlist['name']) . '">';
+            echo '<h3>' . htmlspecialchars($playlist['name']) . '</h3>';
+            echo '</a>';
+            echo '</div>';
+        }
         echo '</div>';
+    } else {
+        echo 'Error: ' . $playlists['error'];
     }
-    echo '</div>';
-} else {
-    echo 'Error: ' . $playlists['error'];
+    $genres = $playlist["name"];
 }
-$genres = $playlist["name"];
 if (isset($_GET['id'])) {
     try {
         $stmt = $conn->prepare('SELECT * FROM tblsongs WHERE genre = :genre');
@@ -114,19 +152,47 @@ try {
     $message = 'خطا: ' . $e->getMessage();
 }
 
-if (!empty($genres)) {
-    echo '<div class="genre-grid">';
-    foreach ($genres as $genre) {
-        echo '<div class="genre-item">';
-        echo '<a href="playlists.php?genre=' . urlencode($genre['genre']) . '">';
-        echo '<img src="admin/banners/AdobeStock_215384460_Preview.jpeg" alt="' . htmlspecialchars($genre['genre']) . '" class="genre-image">';
-        echo '<h3>' . htmlspecialchars($genre['genre']) . '</h3>';
-        echo '</a>';
-        echo '</div>';
+if (isset($_GET['genre'])) {
+    $selectedGenre = $_GET['genre'];
+    try {
+        $stmt = $conn->prepare('SELECT * FROM tblsongs WHERE genre = :genre');
+        $stmt->bindParam(':genre', $selectedGenre, PDO::PARAM_STR);
+        $stmt->execute();
+        $songs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        $message = 'خطا: ' . $e->getMessage();
     }
-    echo '</div>';
+    if (!empty($songs)) {
+        $uniqueSongs = [];
+        echo '<div class="songs-grid">';
+        foreach ($uniqueSongs as $song) {
+            echo '<div class="song-item">';
+            echo '<a href="song.php?id=' . $song['id'] . '">';
+            echo '<img src="' . htmlspecialchars($song['posterPath']) . '" alt="' . htmlspecialchars($song['artist']) . '" style="width: 100%; height: auto;">';
+            echo '<h3>' . htmlspecialchars($song['songName']) . '</h3>';
+            echo '<audio src="' . htmlspecialchars($song['songPath']) . '" controls id="audioPlayer"></audio>';
+            echo '</a>';
+            echo '</div>';
+        }
+        echo '</div>';
+    } else {
+        echo '<p>هیچ آهنگی در این ژانر یافت نشد.</p>';
+    }
 } else {
-    echo '<p>هیچ ژانری یافت نشد.</p>';
+    if (!empty($genres)) {
+        echo '<div class="genre-grid">';
+        foreach ($genres as $genre) {
+            echo '<div class="genre-item">';
+            echo '<a href="playlists.php?genre=' . urlencode($genre['genre']) . '">';
+            echo '<img src="admin/banners/AdobeStock_215384460_Preview.jpeg" alt="' . htmlspecialchars($genre['genre']) . '" class="genre-image">';
+            echo '<h3>' . htmlspecialchars($genre['genre']) . '</h3>';
+            echo '</a>';
+            echo '</div>';
+        }
+        echo '</div>';
+    } else {
+        echo '<p>هیچ ژانری یافت نشد.</p>';
+    }
 }
 
 if (isset($_GET['genre'])){
@@ -137,7 +203,7 @@ if (isset($_GET['genre'])){
         $stmt->execute();
         $songs = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        $message = 'خطا: ' . $e->getMessage();
+        $message = 'Error: ' . $e->getMessage();
     }
     if (!empty($songs)) {
     echo '<div class="songs-grid">';
@@ -153,5 +219,4 @@ if (isset($_GET['genre'])){
         echo '</div>';
     }
 }
-var_dump($_SESSION);
 ?>

@@ -1,6 +1,8 @@
 <?php
 session_start();
-include '../configure.php';
+include '../includes/init.php';
+
+global $conn;
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -35,13 +37,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile_picture'])) {
     // Move the file to the target directory
     if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $target_file)) {
         // Update the image path in the database
-        $sql = "UPDATE tblusers SET imgpath = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("si", $target_file, $user_id);
-        $stmt->execute();
-        $stmt->close();
-        
-        echo "Profile picture uploaded successfully.";
+        try {
+            $sql = "UPDATE tblusers SET imgpath = :imgpath WHERE id = :id";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':imgpath', $target_file, PDO::PARAM_STR);
+            $stmt->bindParam(':id', $user_id, PDO::PARAM_INT);
+            $stmt->execute();
+            echo "Profile picture uploaded successfully.";
+        } catch (PDOException $e) {
+            die("Error updating profile picture: " . $e->getMessage());
+        }
     } else {
         die("Sorry, there was an error uploading your file.");
     }

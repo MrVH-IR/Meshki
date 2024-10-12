@@ -38,6 +38,7 @@
         </nav>
     </header>
     <main>
+        <?php if(isset($_SESSION["user_id"])): ?>
         <section id="playlists">
             <h2>Your Playlists</h2>
             <div class="playlist-grid">
@@ -69,6 +70,7 @@
                 <button type="submit">Create</button>
             </form>
         </section>
+        <?php endif; ?>
         <div class="background-banner">
             <img src="./admin/banners/bgbanner.jpg" alt="Background Banner" class="background-image">
         </div>
@@ -83,7 +85,7 @@
             document.getElementById('createPlaylistForm').style.display = 'block';
         });
 
-        // دکمه بستن فرم
+        // Close Form
         var closeButton = document.createElement('button');
         closeButton.textContent = 'X';
         closeButton.style.marginLeft = '10px';
@@ -92,7 +94,7 @@
         });
         document.getElementById('createPlaylistForm').querySelector('h2').appendChild(closeButton);
 
-        // کد جدید برای باز و بسته کردن منو
+        // Menu
         document.querySelector('.menu-toggle').addEventListener('click', function() {
             document.querySelector('.menu').classList.toggle('active');
         });

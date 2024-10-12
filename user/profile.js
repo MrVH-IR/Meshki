@@ -1,63 +1,74 @@
-// Function to send selected genre to server and display music player
-function sendGenreAndPlayMusic() {
-  var selectedGenre = document.getElementById('genreSelect').value;
-  
-  if (!selectedGenre) {
-    alert('Please select a genre');
-    return;
-  }
+console.log('فایل profile.js بارگذاری شد');
 
-  // Send request to server
-  fetch('profile.php', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: 'genre=' + encodeURIComponent(selectedGenre)
-  })
-  .then(response => response.text())
-  .then(data => {
-    // Display music player
-    document.getElementById('music_player').innerHTML = data;
-    // Close the form after action
-    //document.getElementById('profilePictureForm').style.display = 'none';
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM کاملاً بارگذاری شده است');
+
+    const menuToggle = document.querySelector('.menu-toggle');
+    const menu = document.querySelector('.menu');
+
+    console.log('menuToggle:', menuToggle);
+    console.log('menu:', menu);
+
+    if (menuToggle && menu) {
+        menuToggle.addEventListener('click', function(event) {
+            console.log('منو کلیک شد');
+            event.preventDefault();
+            this.classList.toggle('active');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            console.log('وضعیت نمایش منو:', menu.style.display);
+        });
+    } else {
+        console.error('عناصر منو پیدا نشدند');
+    }
+
+    // Function to send selected genre to server and display music player
+    function sendGenreAndPlayMusic() {
+        var selectedGenre = document.getElementById('genreSelect').value;
+        
+        if (!selectedGenre) {
+            alert('Please select a genre');
+            return;
+        }
+
+        // Send request to server
+        fetch('profile.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'genre=' + encodeURIComponent(selectedGenre)
+        })
+        .then(response => response.text())
+        .then(data => {
+            // Display music player
+            document.getElementById('music_player').innerHTML = data;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    // Create music controls including the Play button
+    var musicControls = document.createElement('div');
+    musicControls.id = 'musicControls';
+    musicControls.innerHTML = `
+        <button onclick="sendGenreAndPlayMusic()">Play Music</button>
+    `;
+
+    document.getElementById('recommendedMusic').appendChild(musicControls);
+
+    // Make sendGenreAndPlayMusic globally accessible
+    window.sendGenreAndPlayMusic = sendGenreAndPlayMusic;
+});
+function sendCode() {
+  // ارسال درخواست به profile.php با روش POST
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "profile.php", true); 
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+          alert("Verification code sent to your email.");
+      }
+  };
+  xhr.send("send_code=true"); // ارسال داده برای مشخص کردن درخواست ارسال کد
 }
-
-// Create profile picture form
-//var form = document.createElement('div');
-//form.id = 'profilePictureForm';
-//form.style.display = 'none'; // Initially hidden
-// form.innerHTML = `
-//   <button onclick="sendGenreAndPlayMusic()">Play Music</button>
-//   <button onclick="document.getElementById('profilePictureForm').style.display='none'">X</button>
-//   <button id="downloadButton" onclick="downloadMusic()">Download Music</button>
-// `;
-// document.getElementById('recommendedMusic').appendChild(form);
-
-// Create music controls including the Play button
-var musicControls = document.createElement('div');
-musicControls.id = 'musicControls';
-musicControls.innerHTML = `
-  <button onclick="sendGenreAndPlayMusic()">Play Music</button>
-`;
-
-document.getElementById('recommendedMusic').appendChild(musicControls);
-
-// Function to download music
-function downloadMusic() {
-  var selectedGenre = document.getElementById('genreSelect').value;
-  // Implement download logic here
-  alert('Downloading music for genre: ' + selectedGenre);
-}
-
-// Add event listener to the profile picture to toggle the form
-document.querySelector('img').onclick = toggleProfilePictureForm;
-
-// Add player display area
-var playerArea = document.createElement('div');
-playerArea.id = 'music_player';
-document.getElementById('recommendedMusic').appendChild(playerArea);

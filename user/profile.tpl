@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-    <h1>User Profile</h1>
     <nav>
         <div class="menu-toggle">
             <div class="hamburger">
