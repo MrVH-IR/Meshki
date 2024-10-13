@@ -1,3 +1,3 @@
 <?php
-include '../configure.php';
+include(__DIR__ . '/../configure.php');
 ?>

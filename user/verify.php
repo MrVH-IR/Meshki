@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute([$userId]);
         
         echo "Your email has been verified!";
+        echo "<script>setTimeout(function() { window.location.href = 'profile.php'; }, 2000);</script>";
     } else {
         echo "Invalid verification code.";
     }

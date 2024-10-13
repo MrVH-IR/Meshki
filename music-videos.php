@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once 'CSS/common_functions.php';
 include './includes/init.php';
 
@@ -34,7 +33,7 @@ echo generate_header("Music Videos");
 ?>
 
 <link rel="stylesheet" href="CSS/music-videos.css">
-<!-- <link rel="stylesheet" href="CSS/pagination.css"> -->
+
 
 <main>
     <div class="background-banner">

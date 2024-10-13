@@ -20,22 +20,8 @@ function generate_header($title, $search_query = '') {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>$title | Meshki</title>
-            <link rel="stylesheet" href="CSS/common.css">
+            <link rel="stylesheet" href="CSS/Album.css">
             <link rel="stylesheet" href="CSS/pagination.css">
-            <style>
-                .upload-btn {
-                    background-color: #4CAF50;
-                    color: white;
-                    padding: 10px 20px;
-                    border: none;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    transition: background-color 0.3s ease;
-                }
-                .upload-btn:hover {
-                    background-color: #45a049;
-                }
-            </style>
         </head>
         <body>
             <header>
@@ -72,37 +58,32 @@ function generate_header($title, $search_query = '') {
         $header .= <<<EOT
                     </ul>
     EOT;
-    
-        if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == true) {
-            $header .= <<<EOT
-                        <button id="uploadVideoBtn" class="upload-btn">Upload Video</button>
-                        <div id="uploadFormContainer" class="upload-form-container" style="display: none;">
-                            <h3>Upload New Video</h3>
-                            <form id="uploadForm" method="post" enctype="multipart/form-data">
-                                <input type="text" name="artist" placeholder="Artist" required>
-                                <input type="text" name="title" placeholder="Title" required>
-                                <textarea name="description" placeholder="Description" required></textarea>
-                                <input type="text" name="tags" placeholder="Tags (comma separated)" required>
-                                <input type="file" name="videoFile" id="videoFile" accept="video/*" required>
-                                <input type="file" name="thumbnailFile" id="thumbnailFile" accept="image/*" required>
-                                <button type="submit">Upload</button>
-                                <button type="button" id="closeFormBtn">Close</button>
-                            </form>
-                        </div>
-    EOT;
-        }
+    if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == true) {
+        $header .= <<<EOT
+                    <button id="uploadAlbumBtn" class="upload-btn">Upload Album</button>
+                    <div id="uploadAlbumFormContainer" class="upload-form-container" style="display: none;">
+                        <h3>Upload New Album</h3>
+                        <form id="uploadAlbumForm" method="post" enctype="multipart/form-data">
+                            <input type="text" name="artist" placeholder="Artist" required>
+                            <input type="text" name="title" placeholder="Title" required>
+                            <textarea name="description" placeholder="Description" required></textarea>
+                            <input type="text" name="tags" placeholder="Tags (comma separated)" required>
+                            <input type="file" name="albumFiles[]" id="albumFiles" placeholder="Select Album Files" webkitdirectory directory multiple/>
+                            <label for="albumFiles" class="custom-file-upload">Select Album Files</label>
+                            <span id="albumFolderName"></span>
+                            
+                            <input type="file" name="thumbnailFile" id="thumbnailFile" placeholder="Cover Album" accept="image/*" required>
+                            <label for="thumbnailFile" class="custom-file-upload">Cover Album</label>
+                            <span id="thumbnailFileName"></span>
+                            <button type="submit">Upload</button>
+                            <button type="button" id="closeFormBtn">Close</button>
+                        </form>
+                    </div>
+EOT;
+    }
     
         $header .= <<<EOT
                 </nav>
-                <script>
-                    document.getElementById('uploadVideoBtn').addEventListener('click', function() {
-                        document.getElementById('uploadFormContainer').style.display = 'block';
-                    });
-    
-                    document.getElementById('closeFormBtn').addEventListener('click', function() {
-                        document.getElementById('uploadFormContainer').style.display = 'none';
-                    });
-                </script>
                 <div class="search-container">
                     <form action="searchvid.php" method="GET" class="search-form">
                         <input type="text" name="q" placeholder="Search For Music Video" value="$search_query" required>
@@ -117,7 +98,6 @@ function generate_header($title, $search_query = '') {
     
         return $header;
     }
-    
 
 function generate_footer() {
     $footer = <<<EOT
@@ -189,3 +169,4 @@ function generate_pagination($total_pages, $current_page, $base_url) {
     $pagination .= '</div></div>';
     return $pagination;
 }
+?>

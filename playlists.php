@@ -1,7 +1,7 @@
 <?php
 session_start();
-include 'includes/init.php';
-include 'template/playlists.tpl';
+include './includes/init.php';
+include './template/playlists.tpl';
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();

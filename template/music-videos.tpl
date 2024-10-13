@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Videos | Meshki</title>
     <link rel="stylesheet" href="../CSS/music-videos.css">
-    <!-- <link rel="stylesheet" href="../CSS/pagination.css"> -->
     <style>
         body {
             font-family: 'Vazir', Tahoma, Arial, sans-serif;
@@ -111,57 +110,6 @@
             text-decoration: none;
             margin-left: 10px;
         }
-        
-        /* اضافه کردن استایل‌های جدید برای pagination */
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 40px;
-            margin-bottom: 40px;
-        }
-
-        .pagination {
-            display: inline-flex;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 25px;
-            padding: 5px;
-        }
-
-        .pagination a {
-            color: #fff;
-            background-color: #ff69b4;
-            padding: 10px 15px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border: 2px solid #ff69b4;
-            margin: 0 5px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
-
-        .pagination a.active {
-            background-color: #fff;
-            color: #ff69b4;
-        }
-
-        .pagination a:hover:not(.active) {
-            background-color: #ff1493;
-            border-color: #ff1493;
-            transform: scale(1.1);
-        }
-
-        .pagination .prev, .pagination .next {
-            background-color: #f1f1f1;
-            color: #ff69b4;
-            border-color: #f1f1f1;
-        }
-
-        .pagination .prev:hover, .pagination .next:hover {
-            background-color: #ff69b4;
-            color: #fff;
-            border-color: #ff69b4;
-        }
     </style>
 </head>
 <body>
@@ -181,23 +129,6 @@
             </div>
             <?php endforeach; ?>
         </div>
-
-        <div class="pagination-container">
-            <div class="pagination">
-                <?php if ($page > 1): ?>
-                    <a href="?page=<?php echo $page - 1; ?>" class="prev">Previous</a>
-                <?php endif; ?>
-                
-                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                    <a href="?page=<?php echo $i; ?>" class="<?php echo $page == $i ? 'active' : ''; ?>"><?php echo $i; ?></a>
-                <?php endfor; ?>
-                
-                <?php if ($page < $total_pages): ?>
-                    <a href="?page=<?php echo $page + 1; ?>" class="next">Next</a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
 
     <div class="video-player">
         <div class="video-container">

@@ -18,18 +18,6 @@ if ($_SESSION['user_id'] == null) {
 // echo "<pre>";
 // print_r($_SESSION);
 // echo "</pre>";
-// function sendCode() {
-//     // ارسال درخواست به profile.php با روش POST
-//     var xhr = new XMLHttpRequest();
-//     xhr.open("POST", "profile.php", true); 
-//     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-//     xhr.onreadystatechange = function() {
-//         if (xhr.readyState === 4 && xhr.status === 200) {
-//             alert("Verification code sent to your email.");
-//         }
-//     };
-//     xhr.send("send_code=true"); // ارسال داده برای مشخص کردن درخواست ارسال کد
-// }
 
 
 // Fetch user data from the database
@@ -93,65 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['genre'])) {
     }
     exit; // Exit after sending response
 }
-
-// Check if the user's email is verified
-try {
-    $query = "SELECT is_verified, email FROM tblusers WHERE id = :user_id";
-    $stmt = $conn->prepare($query);
-    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    $userEmail = $user['email'];
-} catch (PDOException $e) {
-    die("Error fetching user data: " . $e->getMessage());
-}
-
-// Generate a random verification code
-// $verificationCode = rand(100000, 999999);
-
-// use PHPMailer\PHPMailer\PHPMailer;
-// use PHPMailer\PHPMailer\Exception;
-
-// require '../vendor/autoload.php'; // or the path to PHPMailer files if added manually
-
-// $mail = new PHPMailer(true);
-// try {
-//     //Server settings
-//     $mail->isSMTP();
-//     $mail->Host = 'smtp.gmail.com';
-//     $mail->SMTPAuth = true;
-//     $mail->Username = ''; // Your Gmail email
-//     $mail->Password = ''; // Gmail password
-//     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-//     $mail->Port = 587;
-
-//     //Recipients
-//     $mail->setFrom('', 'Mailer');
-//     $mail->addAddress($userEmail); // User's email
-
-//     // Content
-//     $mail->isHTML(true);
-//     $mail->Subject = 'Your Verification Code';
-//     $mail->Body    = 'Your verification code is: ' . $verificationCode;
-
-//     $mail->send();
-//     echo 'Verification code has been sent to your email.';
-// } catch (Exception $e) {
-//     echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-// }
-
-// Save the code in the database for this user (you can store it in a separate table or directly in `tblusers`)
-// For example, store it in a column named `verification_code`
-
-// $sql = "UPDATE tblusers SET verification_code = ? WHERE id = ?";
-// $stmt = $conn->prepare($sql);
-// $stmt->execute([$verificationCode, $user_id]);
-
-// Send the code to the user's email
-// $to = $userEmail;
-// $subject = "Your Verification Code";
-// $message = "Your verification code is: " . $verificationCode;
-// mail($to, $subject, $message);
+// ---- Verification Process ---- //
 
 // Check if the user's email is verified
 try {
@@ -190,8 +120,11 @@ if ($user['is_verified'] == 0) {
             }
           </script>';
 } else {
-    echo "Your email is verified.";
+    echo "<p style='color:pink; position: fixed; bottom: 10px; right: 10px;'>You Are Verified</p>";
 }
+
+
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['send_code'])) {
 
@@ -204,15 +137,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['send_code'])) {
     try {
         //Server settings
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
+        $mail->Host = 'smtp.gmail.com'; // mail host
         $mail->SMTPAuth = true;
-        $mail->Username = ''; // Your Gmail email
-        $mail->Password = ''; // Gmail password
+        $mail->Username = ''; // Your mail email
+        $mail->Password = ''; // mail password
         $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
         //Recipients
-        $mail->setFrom('', 'Mailer');
+        $mail->setFrom('', 'Meshki'); // Your mail email
         $mail->addAddress($userEmail); // User's email
 
         // Content
@@ -225,13 +158,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['send_code'])) {
     } catch (Exception $e) {
         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }
-var_dump($_SESSION);
     // Save the code in the database for this user (you can store it in a separate table or directly in `tblusers`)
-    $sql = "UPDATE tblusers SET verification_code = ? WHERE user_id = $user_id";
+    $sql = "UPDATE tblusers SET verification_code = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$verificationCode, $user_id]);
 }
-
 
 echo $template;
 ?>

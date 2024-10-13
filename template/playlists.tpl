@@ -28,7 +28,7 @@
                     <li><a href="../meshki/playlists.php">Playlists</a></li>
                     <li><a href="../meshki/aboutus.php">About Us</a></li>
                     <?php if(isset($_SESSION["user_id"])): ?>
-                    <li><a href="../meshki/profile.php">Profile</a></li>
+                    <li><a href="../meshki/user/profile.php">Profile</a></li>
                     <li><a href="../meshki/logout.php">Logout</a></li>
                     <?php else: ?>
                     <li><a href="../meshki/login.php">Login</a></li>
