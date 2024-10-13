@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 09, 2024 at 09:39 PM
+-- Generation Time: Oct 13, 2024 at 09:15 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -43,7 +43,9 @@ INSERT INTO `admin_sessions` (`id`, `admin_id`, `session_token`, `created_at`, `
 (4, 2, '288d4544ff691b83aa696573ad5ad71be0c71bd3794ebd58b099b452211d6d02', '2024-09-27 18:48:55', '2024-09-27 23:48:55'),
 (5, 2, '8f48ea67574278678b1a16ac865b99a77fb53ddad32e7f250e273d1c7157abca', '2024-09-29 18:14:11', '2024-09-29 23:14:11'),
 (6, 2, '92a52b82233fe342939103ab0d6a2e25a4a3363d045226958af765fc7f2c5f26', '2024-10-09 11:07:41', '2024-10-09 16:07:41'),
-(7, 2, '4d1e4fcd7f628ffb86d804677eda9fb4e92f70296de0dfa66061e4969ab7e797', '2024-10-09 16:38:01', '2024-10-09 21:38:01');
+(7, 2, '4d1e4fcd7f628ffb86d804677eda9fb4e92f70296de0dfa66061e4969ab7e797', '2024-10-09 16:38:01', '2024-10-09 21:38:01'),
+(8, 2, '425eb96b7a8684126c9a377acd05943f0cc932eb69915a34bc39c95c4c8ea088', '2024-10-13 14:37:32', '2024-10-13 19:37:32'),
+(9, 2, 'cf800ccb69cc2ac899b79ca76a34ed03f22261d29e389cd267df071b30ab203e', '2024-10-13 14:41:24', '2024-10-13 19:41:24');
 
 -- --------------------------------------------------------
 
@@ -69,16 +71,36 @@ CREATE TABLE `tbladmins` (
   `username` varchar(30) NOT NULL,
   `password` varchar(255) NOT NULL,
   `phone` varchar(11) DEFAULT NULL,
-  `email` varchar(50) DEFAULT NULL
+  `email` varchar(50) DEFAULT NULL,
+  `is_admin` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tbladmins`
 --
 
-INSERT INTO `tbladmins` (`id`, `username`, `password`, `phone`, `email`) VALUES
-(2, 'root', '$2y$10$ZxgscxghWDoAD64njvGx8OM8xx42iLvf/sVPdUEq6ZeiladzL3b7u', '09111621911', 'vahdatmohammad0@gmail.com'),
-(3, 'Lord', '$2y$10$4qjq3HgfUWVBn/J5q78Mkeo.DGozAPmX9mgBG.5IRBiobLjLPZHQa', '09120521391', 'vahdatmohammad1@gmail.com');
+INSERT INTO `tbladmins` (`id`, `username`, `password`, `phone`, `email`, `is_admin`) VALUES
+(2, 'root', '$2y$10$ZxgscxghWDoAD64njvGx8OM8xx42iLvf/sVPdUEq6ZeiladzL3b7u', '09120621901', 'vahdatmohammad0@gmail.com', 1),
+(3, 'Lord', '$2y$10$4qjq3HgfUWVBn/J5q78Mkeo.DGozAPmX9mgBG.5IRBiobLjLPZHQa', '09120521391', 'vahdatmohammad1@gmail.com', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblalbums`
+--
+
+CREATE TABLE `tblalbums` (
+  `id` int(11) NOT NULL,
+  `album_name` varchar(255) NOT NULL,
+  `artist_id` int(11) NOT NULL,
+  `release_date` date DEFAULT NULL,
+  `genre` varchar(100) DEFAULT NULL,
+  `imgPath` varchar(255) DEFAULT NULL,
+  `albumPath` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -91,6 +113,41 @@ CREATE TABLE `tbllogs` (
   `user_id` int(6) UNSIGNED DEFAULT NULL,
   `action` varchar(255) NOT NULL,
   `log_date` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblplaylists`
+--
+
+CREATE TABLE `tblplaylists` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `thumbnailPath` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tblplaylists`
+--
+
+INSERT INTO `tblplaylists` (`id`, `user_id`, `name`, `thumbnailPath`, `created_at`, `updated_at`) VALUES
+(1, 3, 'Rock', 'admin/playlists/AdobeStock_196805003_Preview.jpeg', '2024-10-12 10:51:26', '2024-10-12 10:51:26');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tblplaylistsongs`
+--
+
+CREATE TABLE `tblplaylistsongs` (
+  `id` int(11) NOT NULL,
+  `playlist_id` int(11) DEFAULT NULL,
+  `song_id` int(11) DEFAULT NULL,
+  `added_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -150,18 +207,20 @@ CREATE TABLE `tblusers` (
   `gender` enum('male','female','other') DEFAULT NULL,
   `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `birthdate` date DEFAULT NULL,
-  `referral` varchar(50) DEFAULT NULL
+  `referral` varchar(50) DEFAULT NULL,
+  `is_verified` tinyint(1) DEFAULT 0,
+  `verification_code` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tblusers`
 --
 
-INSERT INTO `tblusers` (`id`, `firstname`, `lastname`, `username`, `email`, `password`, `imgpath`, `gender`, `reg_date`, `birthdate`, `referral`) VALUES
-(3, 'Mohammad Reza', 'Vahdat', 'MrVH', 'vahdatmohammad0@gmail.com', '$2y$10$sC05.O8lsrQ3oymicoot9Ok4K/GxXnkau0lOhVuBsOgS7BczVRPiG', 'uploads/AdobeStock_196804987_Preview.jpeg', 'male', '2024-10-09 14:37:06', '1999-01-01', 'Social Media'),
-(4, 'Mahyar', 'Vahdat', 'Mahyar', 'mahyar1999@gmail.com', '$2y$10$YyGWssZOwDTjhDvTiiiVwuYn4/8zgjkmc1HC6YZAgNHywApgvVtgK', '', 'male', '2024-10-09 14:38:07', '1985-03-19', 'friend'),
-(5, 'Milad', 'Vahdat', 'Milad', 'miladvadat1999@gmail.com', '$2y$10$UbSuUyXgTMeMI/m60yQ44.hYs6bvl9MEaSHJCM6ERVsUrseY1clRu', '', 'male', '2024-10-09 14:43:38', '1982-09-20', 'search'),
-(6, 'Elnaz', 'Pirozi', 'Elnaz', 'elnazpirozi1990@gmail.com', '$2y$10$.JsyZ0UslmH0FFxf50YwauPofHwqeD3uNLM6SiyXCr3EaPGMxXhmG', '', 'female', '2024-10-09 14:47:07', '1993-06-22', 'ad');
+INSERT INTO `tblusers` (`id`, `firstname`, `lastname`, `username`, `email`, `password`, `imgpath`, `gender`, `reg_date`, `birthdate`, `referral`, `is_verified`, `verification_code`) VALUES
+(3, 'Mohammad Reza', 'Vahdat', 'MrVH', 'vahdatmohammad0@gmail.com', '$2y$10$sC05.O8lsrQ3oymicoot9Ok4K/GxXnkau0lOhVuBsOgS7BczVRPiG', 'uploads/AdobeStock_206261960_Preview.jpeg', 'male', '2024-10-13 14:34:58', '1999-01-01', 'Social Media', 1, 655010),
+(4, 'Mahyar', 'Vahdat', 'Mahyar', 'mahyar1999@gmail.com', '$2y$10$YyGWssZOwDTjhDvTiiiVwuYn4/8zgjkmc1HC6YZAgNHywApgvVtgK', '', 'male', '2024-10-09 14:38:07', '1985-03-19', 'friend', 0, 0),
+(5, 'Milad', 'Vahdat', 'Milad', 'miladvadat1999@gmail.com', '$2y$10$UbSuUyXgTMeMI/m60yQ44.hYs6bvl9MEaSHJCM6ERVsUrseY1clRu', '', 'male', '2024-10-09 14:43:38', '1982-09-20', 'search', 0, 0),
+(6, 'Elnaz', 'Pirozi', 'Elnaz', 'elnazpirozi1990@gmail.com', '$2y$10$.JsyZ0UslmH0FFxf50YwauPofHwqeD3uNLM6SiyXCr3EaPGMxXhmG', '', 'female', '2024-10-09 14:47:07', '1993-06-22', 'ad', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -235,9 +294,27 @@ ALTER TABLE `tbladmins`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `tblalbums`
+--
+ALTER TABLE `tblalbums`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `tbllogs`
 --
 ALTER TABLE `tbllogs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tblplaylists`
+--
+ALTER TABLE `tblplaylists`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tblplaylistsongs`
+--
+ALTER TABLE `tblplaylistsongs`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -272,7 +349,7 @@ ALTER TABLE `users_sessions`
 -- AUTO_INCREMENT for table `admin_sessions`
 --
 ALTER TABLE `admin_sessions`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `chat_messages`
@@ -287,10 +364,28 @@ ALTER TABLE `tbladmins`
   MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `tblalbums`
+--
+ALTER TABLE `tblalbums`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `tbllogs`
 --
 ALTER TABLE `tbllogs`
   MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tblplaylists`
+--
+ALTER TABLE `tblplaylists`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `tblplaylistsongs`
+--
+ALTER TABLE `tblplaylistsongs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `tblsongs`
@@ -314,7 +409,7 @@ ALTER TABLE `tblvids`
 -- AUTO_INCREMENT for table `users_sessions`
 --
 ALTER TABLE `users_sessions`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
