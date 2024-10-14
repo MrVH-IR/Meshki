@@ -1,5 +1,4 @@
 <?php
-session_start();
 include 'configure.php';
 include 'CSS/common_functions.php';
 

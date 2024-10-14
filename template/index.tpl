@@ -27,7 +27,7 @@
             </div>
             <ul class="menu">
                 <li><a href="../meshki/index.php">Home Page</a></li>
-                <li><a href="../meshki/music.php">Music</a></li>
+                <li><a href="../meshki/album.php">Album</a></li>
                 <li><a href="../meshki/music-videos.php">Music Video</a></li>
                 <li><a href="../meshki/artists.php">Artists</a></li>
                 <li><a href="../meshki/playlists.php">Playlists</a></li>

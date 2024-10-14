@@ -1,0 +1,79 @@
+/* General settings for the body */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex; /* For using flexbox */
+    background-color: #f4f4f4; /* Background color for the whole page */
+}
+
+/* Style for the navigation */
+nav {
+    width: 250px; /* Set the width of the menu */
+    height: 100vh; /* Take the full height of the page */
+    background-color: #2c3e50; /* Background color for the menu */
+    color: #ecf0f1; /* Text color for the menu */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Shadow for the menu */
+    position: fixed; /* Fix the menu to the left */
+}
+
+/* Style for the links in the menu */
+nav a {
+    display: block; /* Links are displayed as blocks */
+    padding: 15px;
+    color: #ecf0f1; /* Text color */
+    text-decoration: none; /* Remove underline */
+    transition: background-color 0.3s; /* Animation for color change */
+}
+
+nav a:hover {
+    background-color: #34495e; /* Background color on hover */
+}
+
+/* Style for the active option */
+nav .active a {
+    background-color: #007bff; /* Background color for the active option */
+    color: rgb(255, 255, 255); /* Text color for the active option */
+}
+
+/* Style for the main content */
+.content {
+    padding: 20px;
+    margin-left: 250px; /* Prevent the main content from being covered by the menu */
+    flex: 1; /* Take the remaining space */
+    background-color: #ffffff; /* Background color for the main content */
+    border-left: 1px solid #ccc; /* Separator line */
+}
+
+/* Style for the headings */
+h1 {
+    color: #2c3e50; /* Text color for the headings */
+}
+
+h2 {
+    color: #555; /* Text color for the sub-headings */
+}
+
+/* Style for other sections */
+.delete-container, .upload-container, .admin-container {
+    background-color: #ffffff; /* Background color for each section */
+    padding: 20px;
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Shadow for the sections */
+    margin-bottom: 20px; /* Space between sections */
+}
+
+/* Style for the buttons */
+button {
+    background-color: #007bff; /* Background color for the buttons */
+    color: #ffffff; /* Text color for the buttons */
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Change the cursor to a pointer on hover */
+    transition: background-color 0.3s; /* Animation for color change */
+}
+
+button:hover {
+    background-color: #0056b3; /* Background color for the buttons on hover */
+}
