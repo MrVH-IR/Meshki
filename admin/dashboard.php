@@ -1,6 +1,12 @@
 <?php
 // For saving the active menu status
 session_start();
+$admin_id = $_SESSION['admin_id'];
+if (!isset($admin_id)) {
+    header('Location: ./login.php');
+    exit;
+}
+
 
 // Set the active page
 $page = isset($_GET['page']) ? $_GET['page'] : 'home';
@@ -44,6 +50,9 @@ function isActive($currentPage) {
                     <li class="<?php echo isActive('admins'); ?>">
                         <a href="?page=admins">Manage Admins</a>
                     </li>
+                    <li class="<?php echo isActive('logout'); ?>">
+                        <a href="?page=logout">Logout</a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -69,6 +78,10 @@ function isActive($currentPage) {
                     break;
                 default:
                     include 'home.php';
+                    break;
+                case 'logout':
+                    include 'logout.php';
+                    break;
             }
             ?>
         </div>

@@ -1,5 +1,4 @@
 <?php
-include 'configure.php';
 include 'CSS/common_functions.php';
 
 // Reading template content
@@ -114,93 +113,88 @@ if (isset($_GET['upload_success']) && $_GET['upload_success'] == 'true') {
 }
 
 // Displaying uploaded songs
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "meshki";
+try {
+    $conn = connectToDatabase();
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+    // Pagination settings
+    $songs_per_page = 5;
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $offset = ($page - 1) * $songs_per_page;
 
-if ($conn->connect_error) {
-    die("Error connecting to database: " . $conn->connect_error);
-}
+    // Query to get songs
+    $sql = "SELECT * FROM tblsongs ORDER BY id DESC LIMIT :offset, :songs_per_page";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->bindParam(':songs_per_page', $songs_per_page, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Pagination settings
-$songs_per_page = 5;
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($page - 1) * $songs_per_page;
+    // Calculating total pages
+    $sql_count = "SELECT COUNT(*) as total FROM tblsongs";
+    $stmt_count = $conn->prepare($sql_count);
+    $stmt_count->execute();
+    $row_count = $stmt_count->fetch(PDO::FETCH_ASSOC);
+    $total_pages = ceil($row_count['total'] / $songs_per_page);
 
-// Query to get songs
-$sql = "SELECT * FROM tblsongs ORDER BY id DESC LIMIT ?, ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("ii", $offset, $songs_per_page);
-$stmt->execute();
-$result = $stmt->get_result();
-
-// Calculating total pages
-$sql_count = "SELECT COUNT(*) as total FROM tblsongs";
-$result_count = $conn->query($sql_count);
-$row_count = $result_count->fetch_assoc();
-$total_pages = ceil($row_count['total'] / $songs_per_page);
-
-if ($result->num_rows > 0) {
-    echo '<div class="music-containers">';
-    while($row = $result->fetch_assoc()) {
-        echo '<div class="music-container">';
-        echo '<h2 class="music-title">' . $row["songName"] . ' - ' . $row["artist"] . '</h2>';
-        echo '<img src="' . $row["posterPath"] . '" alt="' . $row["songName"] . ' poster" class="music-poster">';
-        echo '<p class="music-description">' . $row["description"] . '</p>';
-        echo '<div class="music-tags">';
-        $tags = explode(',', $row["tags"]);
-        foreach ($tags as $tag) {
-            echo '<span>' . trim($tag) . '</span>';
+    if ($result) {
+        echo '<div class="music-containers">';
+        foreach ($result as $row) {
+            echo '<div class="music-container">';
+            echo '<h2 class="music-title">' . $row["songName"] . ' - ' . $row["artist"] . '</h2>';
+            echo '<img src="' . $row["posterPath"] . '" alt="' . $row["songName"] . ' poster" class="music-poster">';
+            echo '<p class="music-description">' . $row["description"] . '</p>';
+            echo '<div class="music-tags">';
+            $tags = explode(',', $row["tags"]);
+            foreach ($tags as $tag) {
+                echo '<span>' . trim($tag) . '</span>';
+            }
+            echo '</div>';
+            echo '<button class="show-more-btn" onclick="togglePlayer(this)">Show More</button>';
+            echo '<div class="music-player" style="display: none;">';
+            echo '<audio controls>';
+            echo '<source src="' . $row["songPath"] . '" type="audio/mpeg">';
+            echo 'Your browser does not support the audio element.';
+            echo '</audio>';
+            echo '</div>';
+            if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']):
+                echo '<button class="delete-btn" onclick="deleteSong(' . $row["id"] . ')">X</button>';
+            endif;
+            echo '</div>';
+        }
+        
+        // Adding pagination controls
+        echo '<div class="pagination-container">';
+        echo '<div class="pagination">';
+        if ($page > 1) {
+            echo '<a href="?page='.($page-1).'" class="prev">Previous</a>';
+        }
+        for ($i = 1; $i <= $total_pages; $i++) {
+            echo '<a href="?page='.$i.'" '.($page == $i ? 'class="active"' : '').'>'.$i.'</a>';
+        }
+        if ($page < $total_pages) {
+            echo '<a href="?page='.($page+1).'" class="next">Next</a>';
         }
         echo '</div>';
-        echo '<button class="show-more-btn" onclick="togglePlayer(this)">Show More</button>';
-        echo '<div class="music-player" style="display: none;">';
-        echo '<audio controls>';
-        echo '<source src="' . $row["songPath"] . '" type="audio/mpeg">';
-        echo 'Your browser does not support the audio element.';
-        echo '</audio>';
         echo '</div>';
-        if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']):
-            echo '<button class="delete-btn" onclick="deleteSong(' . $row["id"] . ')">X</button>';
-        endif;
-        echo '</div>';
-    }
-    
-    // Adding pagination controls
-    echo '<div class="pagination-container">';
-    echo '<div class="pagination">';
-    if ($page > 1) {
-        echo '<a href="?page='.($page-1).'" class="prev">Previous</a>';
-    }
-    for ($i = 1; $i <= $total_pages; $i++) {
-        echo '<a href="?page='.$i.'" '.($page == $i ? 'class="active"' : '').'>'.$i.'</a>';
-    }
-    if ($page < $total_pages) {
-        echo '<a href="?page='.($page+1).'" class="next">Next</a>';
-    }
-    echo '</div>';
-    echo '</div>';
-    
-    echo '<script>
-    function togglePlayer(button) {
-        var player = button.nextElementSibling;
-        if (player.style.display === "none") {
-            player.style.display = "block";
-            button.textContent = "Show Less";
-        } else {
-            player.style.display = "none";
-            button.textContent = "Show More";
+        
+        echo '<script>
+        function togglePlayer(button) {
+            var player = button.nextElementSibling;
+            if (player.style.display === "none") {
+                player.style.display = "block";
+                button.textContent = "Show Less";
+            } else {
+                player.style.display = "none";
+                button.textContent = "Show More";
+            }
         }
+        </script>';
+    } else {
+        echo "No songs found.";
     }
-    </script>';
-} else {
-    echo "No songs found.";
+} catch (PDOException $e) {
+    die("Error connecting to database: " . $e->getMessage());
 }
-
-$conn->close();
 
 $content = "Main content of the page";
 
@@ -226,31 +220,26 @@ if (\$_SERVER["REQUEST_METHOD"] == "POST") {
     move_uploaded_file(\$_FILES["poster"]["tmp_name"], \$target_file_poster);
 
     // Saving data to database
-    \$servername = "localhost";
-    \$username = "root";
-    \$password = "";
-    \$dbname = "meshki";
+    try {
+        \$conn = connectToDatabase();
+        \$sql = "INSERT INTO tblsongs (artist, songName, songPath, posterPath, description, tags, genre, upload_date)
+        VALUES (:artist, :songName, :songPath, :posterPath, :description, :tags, :genre, CURDATE())";
 
-    \$conn = new mysqli(\$servername, \$username, \$password, \$dbname);
+        \$stmt = \$conn->prepare(\$sql);
+        \$stmt->execute([
+            ':artist' => \$artist,
+            ':songName' => \$songName,
+            ':songPath' => \$target_file_song,
+            ':posterPath' => \$target_file_poster,
+            ':description' => \$description,
+            ':tags' => \$tags,
+            ':genre' => \$genre
+        ]);
 
-    if (\$conn->connect_error) {
-        die("Connection failed: " . \$conn->connect_error);
-    }
-
-    \$sql = "INSERT INTO tblsongs (artist, songName, songPath, posterPath, description, tags, genre, upload_date)
-    VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE())";
-
-    \$stmt = \$conn->prepare(\$sql);
-    \$stmt->bind_param("sssssss", \$artist, \$songName, \$target_file_song, \$target_file_poster, \$description, \$tags, \$genre);
-
-    if (\$stmt->execute()) {
         echo "<script>alert('Song uploaded successfully.'); window.location.href = 'index.php';</script>";
-    } else {
-        echo "Error uploading song: " . \$stmt->error;
+    } catch (PDOException \$e) {
+        echo "Error uploading song: " . \$e->getMessage();
     }
-
-    \$stmt->close();
-    \$conn->close();
 }
 ?>
 EOT;
@@ -263,31 +252,19 @@ $delete_song_file = <<<EOT
 if (isset(\$_GET['id'])) {
     \$songId = \$_GET['id'];
 
-    // Connecting to database
-    \$servername = "localhost";
-    \$username = "root";
-    \$password = "";
-    \$dbname = "meshki";
+    try {
+        // Connecting to database
+        \$conn = connectToDatabase();
 
-    \$conn = new mysqli(\$servername, \$username, \$password, \$dbname);
+        // Deleting song from database
+        \$sql = "DELETE FROM tblsongs WHERE id = :id";
+        \$stmt = \$conn->prepare(\$sql);
+        \$stmt->execute([':id' => \$songId]);
 
-    if (\$conn->connect_error) {
-        die(json_encode(["success" => false, "error" => "Error connecting to database: " . \$conn->connect_error]));
-    }
-
-    // Deleting song from database
-    \$sql = "DELETE FROM tblsongs WHERE id = ?";
-    \$stmt = \$conn->prepare(\$sql);
-    \$stmt->bind_param("i", \$songId);
-
-    if (\$stmt->execute()) {
         echo json_encode(["success" => true]);
-    } else {
-        echo json_encode(["success" => false, "error" => "Error deleting song: " . \$stmt->error]);
+    } catch (PDOException \$e) {
+        echo json_encode(["success" => false, "error" => "Error deleting song: " . \$e->getMessage()]);
     }
-
-    \$stmt->close();
-    \$conn->close();
 } else {
     echo json_encode(["success" => false, "error" => "Song ID not provided."]);
 }

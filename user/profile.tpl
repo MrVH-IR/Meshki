@@ -18,11 +18,12 @@
         </div>
         <ul class="menu">
             <li><a href="../index.php">Home Page</a></li>
-            <li><a href="../music.php">Musics</a></li>
+            <li><a href="../Album.php">Albums</a></li>
             <li><a href="../music-videos.php">Music Videos</a></li>
             <li><a href="../artists.php">Artists</a></li>
             <li><a href="../playlists.php">Playlists</a></li>
             <li><a href="../aboutus.php">About Us</a></li>
+            <li><a href="../logout.php">Logout</a></li>
         </ul>
     </nav>
     <div style="text-align: center;">

@@ -1,6 +1,8 @@
 <?php
 session_start();
 
+include '../includes/init.php';
+
 // خواندن محتوای قالب login.tpl
 $template = file_get_contents('template/login.tpl');
 
@@ -11,59 +13,53 @@ echo $template;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
-    
-    // اتصال به پایگاه داده
-    $servername = "localhost";
-    $dbusername = "root";
-    $dbpassword = "";
-    $dbname = "meshki";
 
-    $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
+    try {
+        $conn = connectToDatabase();
 
-    // بررسی اتصال
-    if ($conn->connect_error) {
-        die("خطا در اتصال به پایگاه داده: " . $conn->connect_error);
-    }
+        $sql = "SELECT * FROM tbladmins WHERE username = :username";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            if ($result['is_admin'] == 0) {
+                $_SESSION['pending_admin'] = true;
+            }
+            if (password_verify($password, $result['password'])) {
+                $_SESSION['admin_id'] = $result['id'];
+                $_SESSION['admin_username'] = $result['username'];
+                $_SESSION['is_admin'] = true;
 
-    // بررسی اطلاعات ادمین در پایگاه داده
-    $sql = "SELECT * FROM tbladmins WHERE username = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
+                $session_token = bin2hex(random_bytes(32));
+                $created_at = date('Y-m-d H:i:s');
+                $end_at = date('Y-m-d H:i:s', strtotime('+5 hours'));
 
-    if ($result->num_rows == 1) {
-        $row = $result->fetch_assoc();
-        if (password_verify($password, $row['password'])) {
-            // ورود موفقیت‌آمیز
-            $_SESSION['admin_id'] = $row['id'];
-            $_SESSION['admin_username'] = $row['username'];
-            $_SESSION['is_admin'] = true;
+                try {
+                    $sql = "INSERT INTO admin_sessions (admin_id, session_token, created_at, end_at) VALUES (:admin_id, :session_token, :created_at, :end_at)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bindParam(':admin_id', $result['id'], PDO::PARAM_INT);
+                    $stmt->bindParam(':session_token', $session_token, PDO::PARAM_STR);
+                    $stmt->bindParam(':created_at', $created_at, PDO::PARAM_STR);
+                    $stmt->bindParam(':end_at', $end_at, PDO::PARAM_STR);
+                    $stmt->execute();
 
-            // ایجاد توکن سشن
-            $session_token = bin2hex(random_bytes(32));
-            $created_at = date('Y-m-d H:i:s');
-            $end_at = date('Y-m-d H:i:s', strtotime('+5 hours'));
+                    $_SESSION['session_token'] = $session_token;
 
-            // ذخیره سشن در پایگاه داده
-            $sql = "INSERT INTO admin_sessions (admin_id, session_token, created_at, end_at) VALUES (?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("isss", $row['id'], $session_token, $created_at, $end_at);
-            $stmt->execute();
-
-            // ذخیره توکن سشن در سشن
-            $_SESSION['session_token'] = $session_token;
-
-            header("Location: ../index.php");
-            exit();
+                    header("Location: ./dashboard.php");
+                    exit();
+                } catch (PDOException $e) {
+                    echo "<p style='color: red;'>خطا در ثبت نشست: " . $e->getMessage() . "</p>";
+                }
+            } else {
+                echo "<p style='color: red;'>نام کاربری یا رمز عبور نامعتبر است.</p>";
+            }
         } else {
-            echo "<p style='color: red;'>نام کاربری یا رمز عبور اشتباه است.</p>";
+            echo "<p style='color: red;'>نام کاربری یا رمز عبور نامعتبر است.</p>";
         }
-    } else {
-        echo "<p style='color: red;'>نام کاربری یا رمز عبور اشتباه است.</p>";
+    } catch (PDOException $e) {
+        echo "<p style='color: red;'>خطا در اتصال به پایگاه داده: " . $e->getMessage() . "</p>";
     }
-
-    $stmt->close();
-    $conn->close();
 }
 ?>

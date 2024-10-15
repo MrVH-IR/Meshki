@@ -18,30 +18,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     move_uploaded_file($_FILES["poster"]["tmp_name"], $target_file_poster);
 
     // Saving data to database
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "meshki";
+    try {
+        $conn = connectToDatabase();
+        $sql = "INSERT INTO tblsongs (artist, songName, songPath, posterPath, description, tags, genre, upload_date)
+        VALUES (:artist, :songName, :songPath, :posterPath, :description, :tags, :genre, CURDATE())";
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([
+            ':artist' => $artist,
+            ':songName' => $songName,
+            ':songPath' => $target_file_song,
+            ':posterPath' => $target_file_poster,
+            ':description' => $description,
+            ':tags' => $tags,
+            ':genre' => $genre
+        ]);
 
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    $sql = "INSERT INTO tblsongs (artist, songName, songPath, posterPath, description, tags, genre, upload_date)
-    VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE())";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssssss", $artist, $songName, $target_file_song, $target_file_poster, $description, $tags, $genre);
-
-    if ($stmt->execute()) {
         echo "<script>alert('Song uploaded successfully.'); window.location.href = 'index.php';</script>";
-    } else {
-        echo "Error uploading song: " . $stmt->error;
+    } catch (PDOException $e) {
+        echo "Error uploading song: " . $e->getMessage();
     }
-
-    $stmt->close();
-    $conn->close();
 }
 ?>

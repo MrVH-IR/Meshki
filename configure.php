@@ -1,14 +1,16 @@
 <?php
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "meshki";
+$SER_ADD = "localhost";
+$SER_USER = "root";
+$SER_PASS = "";
+$DB_NAME = "meshki";
 
-try {
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+function connectToDatabase() {
+    global $SER_ADD, $SER_USER, $DB_NAME, $SER_PASS;
+    try {
+        return new PDO("mysql:host=$SER_ADD;dbname=$DB_NAME", $SER_USER, $SER_PASS);
+    } catch (PDOException $e) {
+        die("خطا در اتصال به پایگاه داده: " . $e->getMessage());
+    }
 }
 ?>

@@ -1,4 +1,9 @@
 <?php
+if (isset($_SESSION['pending_admin']) && $_SESSION['pending_admin'] == true) {
+    header("Location: ./dashboard.php");
+    exit();
+}
+
 // File to save blocked IP addresses
 $ipFile = 'blocked_ips.txt';
 
@@ -73,6 +78,19 @@ $blockedIps = file($ipFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         <?php } else { ?>
             <p>No IP is blocked.</p>
         <?php } ?>
+    </div>
+    <div class="unblockip-container">
+        <h1>Unblock IP</h1>
+        <?php if (isset($message)) { ?>
+            <p><?php echo $message; ?></p>
+        <?php } ?>
+        
+        <!-- Form to unblock IP -->
+        <form action="blockip.php" method="post">
+            <label for="unblock_ip">Enter IP:</label>
+            <input type="text" name="unblock_ip" id="unblock_ip" required>
+            <button type="submit">Unblock</button>
+        </form>
     </div>
 </body>
 </html>

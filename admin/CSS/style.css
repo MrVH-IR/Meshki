@@ -77,3 +77,95 @@ button {
 button:hover {
     background-color: #0056b3; /* Background color for the buttons on hover */
 }
+
+/* Style for the upload form */
+.upload-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.upload-container input[type="text"],
+.upload-container textarea,
+.upload-container select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.upload-container .custom-file-upload {
+    display: inline-block;
+    padding: 10px 15px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.upload-container #songFileName,
+.upload-container #posterFileName {
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: #666;
+}
+/* استایل برای فرم آپلود ویدیو */
+.upload-video {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+.upload-video h1 {
+    margin-bottom: 15px;
+    color: #333333;
+}
+
+.upload-video form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.upload-video input[type="text"],
+.upload-video input[type="file"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.upload-video input[type="file"] {
+    padding: 5px;
+}
+
+.upload-video .custom-file-upload {
+    display: inline-block;
+    padding: 10px 15px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.upload-video #videoFileName,
+.upload-video #posterFileName {
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.upload-video button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-video button:hover {
+    background-color: #0056b3;
+}
+

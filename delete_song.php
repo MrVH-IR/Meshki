@@ -2,31 +2,19 @@
 if (isset($_GET['id'])) {
     $songId = $_GET['id'];
 
-    // Connecting to database
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "meshki";
+    try {
+        // Connecting to database
+        $conn = connectToDatabase();
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
+        // Deleting song from database
+        $sql = "DELETE FROM tblsongs WHERE id = :id";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([':id' => $songId]);
 
-    if ($conn->connect_error) {
-        die(json_encode(["success" => false, "error" => "Error connecting to database: " . $conn->connect_error]));
-    }
-
-    // Deleting song from database
-    $sql = "DELETE FROM tblsongs WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $songId);
-
-    if ($stmt->execute()) {
         echo json_encode(["success" => true]);
-    } else {
-        echo json_encode(["success" => false, "error" => "Error deleting song: " . $stmt->error]);
+    } catch (PDOException $e) {
+        echo json_encode(["success" => false, "error" => "Error deleting song: " . $e->getMessage()]);
     }
-
-    $stmt->close();
-    $conn->close();
 } else {
     echo json_encode(["success" => false, "error" => "Song ID not provided."]);
 }

@@ -1,6 +1,8 @@
 <?php
-require_once 'CSS/common_functions.php';
-include './includes/init.php';
+include 'CSS/common_functions.php';
+
+global $conn;
+$conn = connectToDatabase();
 
 $admin = false;
 if(!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true){
@@ -14,20 +16,24 @@ $videos_per_page = 12;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $videos_per_page;
 
-// Query to get the total number of videos
-$count_sql = "SELECT COUNT(*) as total FROM tblvids";
-$count_result = $conn->query($count_sql);
-$count_row = $count_result->fetch(PDO::FETCH_ASSOC);
-$total_videos = $count_row['total'];
-$total_pages = ceil($total_videos / $videos_per_page);
+try {
+    // Query to get the total number of videos
+    $count_sql = "SELECT COUNT(*) as total FROM tblvids";
+    $count_result = $conn->query($count_sql);
+    $count_row = $count_result->fetch(PDO::FETCH_ASSOC);
+    $total_videos = $count_row['total'];
+    $total_pages = ceil($total_videos / $videos_per_page);
 
-// Query to get the videos with a limit on the number
-$sql = "SELECT * FROM tblvids ORDER BY upload_date DESC LIMIT :offset, :videos_per_page";
-$stmt = $conn->prepare($sql);
-$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-$stmt->bindParam(':videos_per_page', $videos_per_page, PDO::PARAM_INT);
-$stmt->execute();
-$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Query to get the videos with a limit on the number
+    $sql = "SELECT * FROM tblvids ORDER BY upload_date DESC LIMIT :offset, :videos_per_page";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->bindParam(':videos_per_page', $videos_per_page, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
 
 echo generate_header("Music Videos");
 ?>

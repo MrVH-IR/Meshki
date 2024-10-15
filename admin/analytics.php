@@ -1,17 +1,26 @@
 <?php
-// Directory path for uploads
-$uploadDir = 'vdata/';
-$uploadDir = '../mdata/';
+if (isset($_SESSION['pending_admin']) && $_SESSION['pending_admin'] == true) {
+    header("Location: ./dashboard.php");
+    exit();
+}
+// Directory paths for uploads
+$uploadDirs = [
+    '../mdata/',
+    '../mdata/uploads/videos/',
+    '../mdata/uploads/posters/',
+    'posters/',
+    'playlists/'
+];
 
-// Getting the list of files in the directory
-$files = array_diff(scandir($uploadDir), array('.', '..'));
-
-// Calculating the number of files and the total size
-$totalFiles = count($files);
+$totalFiles = 0;
 $totalSize = 0;
 
-foreach ($files as $file) {
-    $totalSize += filesize($uploadDir . $file);
+foreach ($uploadDirs as $dir) {
+    $files = array_diff(scandir($dir), array('.', '..'));
+    $totalFiles += count($files);
+    foreach ($files as $file) {
+        $totalSize += filesize($dir . $file);
+    }
 }
 
 // Converting the size to megabytes
