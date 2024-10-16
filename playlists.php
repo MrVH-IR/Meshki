@@ -1,13 +1,19 @@
 <?php
 session_start();
 include './includes/init.php';
+ob_start(); // اضافه کردن این خط برای جلوگیری از ارسال هدرها قبل از خروجی
 include './template/playlists.tpl';
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
+if (isset($_GET['id']) && ($_GET['id'])) {
+    header('Location: playlist_detail.php');
+    exit();
+}
+$playlist_detail = 'playlist_detail.php';
 $message = '';
-
+$conn = connectToDatabase();
 function getPlaylists($user_id) {
     try {
         global $conn;
@@ -20,13 +26,14 @@ function getPlaylists($user_id) {
     }
 }
 
-function createPlaylist($user_id, $name, $thumbnailPath) {
+function createPlaylist($user_id, $name, $thumbnailPath, $genre) {
     try {
         global $conn;
-        $stmt = $conn->prepare('INSERT INTO tblPlaylists (user_id, name, thumbnailPath, created_at, updated_at) VALUES (:user_id, :name, :thumbnailPath, NOW(), NOW())');
+        $stmt = $conn->prepare('INSERT INTO tblPlaylists (user_id, name, thumbnailPath, genre, created_at, updated_at) VALUES (:user_id, :name, :thumbnailPath, :genre, NOW(), NOW())');
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->bindParam(':name', $name, PDO::PARAM_STR);
         $stmt->bindParam(':thumbnailPath', $thumbnailPath, PDO::PARAM_STR);
+        $stmt->bindParam(':genre', $genre, PDO::PARAM_STR);
         $stmt->execute();
         return $conn->lastInsertId();
     } catch (PDOException $e) {
@@ -71,6 +78,7 @@ function togglePlayer() {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['playlistName'])) {
     $user_id = $_SESSION['user_id'];
     $name = $_POST['playlistName'];
+    $genre = $_POST['genre'];
     $thumbnailPath = 'admin/playlists/default.png'; // Default thumbnail path
 
     if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] == UPLOAD_ERR_OK) {
@@ -81,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['playlistName'])) {
         }
     }
 
-    $result = createPlaylist($user_id, $name, $thumbnailPath);
+    $result = createPlaylist($user_id, $name, $thumbnailPath, $genre);
     if (isset($result['error'])) {
         $message = 'Error: ' . $result['error'];
     } else {
@@ -94,7 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['playlistName'])) {
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
     $playlists = getPlaylists($user_id);
-
     if (!isset($playlists['error'])) {
         echo '<div class="playlist-grid" style="display: flex; flex-wrap: wrap; justify-content: space-around;">';
         $count = 0;
@@ -106,7 +113,7 @@ if (isset($_SESSION['user_id'])) {
                 echo '<div class="playlist-row" style="display: flex; justify-content: space-around; width: 100%; margin-bottom: 20px;">';
             }
             echo '<div class="playlist-item" style="width: 22%; text-align: center;">';
-            echo '<a href="playlists.php?id=' . $playlist['id'] . '" style="text-decoration: none; color: inherit;">';
+            echo '<a href="playlist_detail.php?id=' . $playlist['id'] . '" style="text-decoration: none; color: inherit;">';
             echo '<img src="' . htmlspecialchars($playlist['thumbnailPath']) . '" alt="' . htmlspecialchars($playlist['name']) . '" style="width: 100%; height: auto; border-radius: 10px;">';
             echo '<h3 style="margin-top: 10px;">' . htmlspecialchars($playlist['name']) . '</h3>';
             echo '</a>';
@@ -120,7 +127,7 @@ if (isset($_SESSION['user_id'])) {
     } else {
         echo '<p style="text-align: center; color: red;">Error: ' . $playlists['error'] . '</p>';
     }
-    $genres = $playlist["name"];
+    $genres = isset($playlist["genre"]) ? $playlist["genre"] : '';
 }
 if (isset($_GET['id'])) {
     try {
@@ -164,6 +171,10 @@ try {
 }
 
 if (isset($_GET['genre'])) {
+    $template = 'playlist_genre.php';
+    $template = $_GET['genre'];
+    header('Location: playlist_genre.php?genre=' . urlencode($template));
+    exit();
     $selectedGenre = $_GET['genre'];
     try {
         $stmt = $conn->prepare('SELECT * FROM tblsongs WHERE genre = :genre');
@@ -230,4 +241,5 @@ if (isset($_GET['genre'])){
         echo '</div>';
     }
 }
+ob_end_flush(); // اضافه کردن این خط برای ارسال خروجی بعد از تمام شدن اسکریپت
 ?>

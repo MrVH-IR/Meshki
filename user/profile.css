@@ -188,7 +188,7 @@ select option:checked {
 }
 
 #music_player audio {
-    width: 90%;
+    width: 50%;
     outline: none;
 }
 

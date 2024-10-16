@@ -1,7 +1,7 @@
 <?php
 // Register.tpl
 $template = file_get_contents('template/register.tpl');
-
+include 'includes/init.php';
 // Register.php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
@@ -20,51 +20,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $template = str_replace('</form>', $error_message . '</form>', $template);
     } else {
         // Connect to the database
-        $conn = new mysqli("localhost", "root", "", "meshki");
+        $conn = connectToDatabase();
 
-        // Check connection
-        if ($conn->connect_error) {
-            die("<p style='color: red;'>Error connecting to the database: " . $conn->connect_error . "</p>");
-        }
-
-        // Check for duplicate username and email
-        $check_query = "SELECT * FROM tblusers WHERE username = ? OR email = ?";
-        $check_stmt = $conn->prepare($check_query);
-        $check_stmt->bind_param("ss", $username, $email);
-        $check_stmt->execute();
-        $result = $check_stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            $error_message = "<p style='color: red;'>Username or email already exists.</p>";
-            $template = str_replace('</form>', $error_message . '</form>', $template);
-        } else {
-            // Hash the password
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            
-            // Save user information to the database
-            $insert_query = "INSERT INTO tblusers (username, email, password, firstname, lastname, gender, birthdate, referral) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            $insert_stmt = $conn->prepare($insert_query);
-            $insert_stmt->bind_param("ssssssss", $username, $email, $hashed_password, $firstname, $lastname, $gender, $birthdate, $referral);
-
-            if ($insert_stmt->execute()) {
-                // Login The User After Registration
-                session_start();
-                $_SESSION['user_id'] = $insert_stmt->insert_id;
-                $_SESSION['username'] = $username;
-                
-                // Redirect the user to the profile page
-                header("Location: user/profile.php");
-                exit();
-            } else {
-                $error_message = "<p style='color: red;'>Registration error: " . $conn->error . "</p>";
-                $template = str_replace('</form>', $error_message . '</form>', $template);
+        if ($conn) {
+            // Check for duplicate username and email
+            try {
+                $check_query = "SELECT * FROM tblusers WHERE username = :username OR email = :email";
+                $check_stmt = $conn->prepare($check_query);
+                $check_stmt->bindParam(':username', $username);
+                $check_stmt->bindParam(':email', $email);
+                $check_stmt->execute();
+                $result = $check_stmt->fetchAll();
+            } catch (PDOException $e) {
+                die("<p style='color: red;'>Error checking for duplicate username and email: " . $e->getMessage() . "</p>");
             }
 
-            $insert_stmt->close();
-        }
+            if (count($result) > 0) {
+                $error_message = "<p style='color: red;'>Username or email already exists.</p>";
+                $template = str_replace('</form>', $error_message . '</form>', $template);
+            } else {
+                // Hash the password
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                
+                // Save user information to the database
+                try {
+                    $insert_query = "INSERT INTO tblusers (username, email, password, firstname, lastname, gender, birthdate, referral) VALUES (:username, :email, :password, :firstname, :lastname, :gender, :birthdate, :referral)";
+                    $insert_stmt = $conn->prepare($insert_query);
+                    $insert_stmt->bindParam(':username', $username);
+                    $insert_stmt->bindParam(':email', $email);
+                    $insert_stmt->bindParam(':password', $hashed_password);
+                    $insert_stmt->bindParam(':firstname', $firstname);
+                    $insert_stmt->bindParam(':lastname', $lastname);
+                    $insert_stmt->bindParam(':gender', $gender);
+                    $insert_stmt->bindParam(':birthdate', $birthdate);
+                    $insert_stmt->bindParam(':referral', $referral);
 
-        $check_stmt->close();
-        $conn->close();
+                    if ($insert_stmt->execute()) {
+                        // Login The User After Registration
+                        session_start();
+                        $_SESSION['user_id'] = $conn->lastInsertId();
+                        $_SESSION['username'] = $username;
+                        
+                        // Close the database connection
+                        $conn = null;
+
+                        // Redirect the user to the profile page
+                        header("Location: user/profile.php");
+                        exit();
+                    } else {
+                        $error_message = "<p style='color: red;'>Registration error: " . $conn->errorInfo()[2] . "</p>";
+                        $template = str_replace('</form>', $error_message . '</form>', $template);
+                    }
+                } catch (PDOException $e) {
+                    die("<p style='color: red;'>Error inserting user into the database: " . $e->getMessage() . "</p>");
+                }
+            }
+        } else {
+            die("<p style='color: red;'>Database connection failed.</p>");
+        }
     }
 }
 

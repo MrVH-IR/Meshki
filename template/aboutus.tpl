@@ -113,6 +113,7 @@
                 <ul>
                     <li><a href="index.php">خانه</a></li>
                     <li class="current"><a href="aboutus.php">درباره ما</a></li>
+                    <li><a href="#collab-section">همکاری با ما</a></li>
                     <li><a href="#contact-section">تماس با ما</a></li>
                 </ul>
             </nav>
@@ -151,13 +152,30 @@
             </div>
         </div>
 
+        <div id="collab-section" class="about-section">
+            <img src="./admin/banners/collab.png" alt="تصویر همکاری" class="about-image">
+            <div class="about-content">
+                <h2>همکاری با ما</h2>
+                <p>
+                    :At Least One Year Experience Is Required For
+                    <ul>
+                        <li>JavaScript (ES6+)</li>
+                        <li>PHP</li>
+                        <li>MySQL</li>
+                        <li>HTML 5</li>
+                        <li>CSS Tailwind</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+
         <div id="contact-section" class="about-section">
             <img src="./admin/banners/callus.jpg" alt="تصویر تماس" class="about-image">
             <div class="about-content">
                 <h2>تماس با ما</h2>
                 <p>
-                  ایمیل: <a href="mailto:vahdatmohammad0@gmail.com">vahdatmohammad0@gmail.com</a><br>
-                  تلفن: <a href="tel:09120621901">09120621901</a>
+                  ایمیل: <a href="mailto:Contact@Meshki.com">Contact@Meshki.com</a><br>
+                  تلفن: <a href="tel:09125555555">TEL</a>
                 </p>
             </div>
         </div>
