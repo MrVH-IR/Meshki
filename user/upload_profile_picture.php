@@ -2,7 +2,7 @@
 session_start();
 include '../includes/init.php';
 
-global $conn;
+$conn = connectToDatabase();
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {

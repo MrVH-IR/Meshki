@@ -50,7 +50,7 @@ function generate_header($title, $search_query = '') {
                     </div>
                     <ul class="menu">
                         <li><a href="index.php">Home Page</a></li>
-                        <li><a href="music.php">Music</a></li>
+                        <li><a href="Album.php">Album</a></li>
                         <li><a href="music-videos.php">Music Video</a></li>
                         <li><a href="artists.php">Artists</a></li>
                         <li><a href="playlists.php">Playlists</a></li>

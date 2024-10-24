@@ -1,9 +1,10 @@
 <?php
 include 'CSS/Album_functions.php';
 include 'template/Album.tpl';
-include 'includes/init.php';
+// include 'includes/init.php';
 
 global $conn;
+$conn = connectToDatabase();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
